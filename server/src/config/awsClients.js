@@ -3,9 +3,14 @@
  *
  * Cloud computing note (for viva):
  *  - All AWS service clients are initialised ONCE here and exported.
- *  - Credentials come exclusively from environment variables (12-factor app).
- *  - In production (Render), credentials are injected via env vars — no
- *    hardcoded secrets. On EC2/Lambda you would use IAM roles instead.
+ *  - Credentials are NOT explicitly passed. The AWS SDK v3 default credential
+ *    provider chain resolves them automatically in this order:
+ *      1. Environment variables (AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY) —
+ *         used for local development.
+ *      2. ~/.aws/credentials file — used for local developer machines.
+ *      3. EC2 instance profile / ECS task role — used in production when an
+ *         IAM role (CloudPMS-EC2-Role) is attached to the EC2 instance.
+ *  - No credentials are hardcoded. No secrets in source control.
  *
  * AWS services used in this project:
  *  ┌─────────────────┬──────────────────────────────────────────┐
@@ -23,12 +28,10 @@ const { S3Client } = require('@aws-sdk/client-s3');
 const { TextractClient } = require('@aws-sdk/client-textract');
 const { SESClient } = require('@aws-sdk/client-ses');
 
+// Only the region is specified. Credentials are resolved by the AWS SDK
+// default credential provider chain — IAM role on EC2, env vars locally.
 const awsConfig = {
   region: process.env.AWS_REGION || 'ap-south-1',
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  },
 };
 
 // ── S3 — Resume Storage ──────────────────────────────────────

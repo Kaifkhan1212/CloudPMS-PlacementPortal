@@ -54,7 +54,12 @@ const parseResumeSkills = async (s3Key) => {
 const sendEmail = async (to, subject, htmlBody) => {
   try {
     const command = new SendEmailCommand({
-      Source: `"CloudPMS Placement Cell" <${process.env.SES_SENDER_EMAIL || 'noreply@kaifkhan.in'}>`,
+      // AWS_SES_SENDER_EMAIL must be a verified identity in SES.
+      // SourceArn is intentionally omitted: for normal same-account SES
+      // sending the SDK does not need it, and mixing it with a different
+      // verified identity (e.g. kaifkhan.in domain) would cause an
+      // authorization error when the Source address is a Gmail address.
+      Source: `"CloudPMS Placement Cell" <${process.env.AWS_SES_SENDER_EMAIL || 'noreply@kaifkhan.in'}>`,
       Destination: {
         ToAddresses: [to],
       },
@@ -63,11 +68,6 @@ const sendEmail = async (to, subject, htmlBody) => {
         Body: { Html: { Data: htmlBody } },
       },
     });
-
-    // Support SES_IDENTITY_ARN if specified
-    if (process.env.SES_IDENTITY_ARN) {
-      command.input.SourceArn = process.env.SES_IDENTITY_ARN;
-    }
 
     const response = await sesClient.send(command);
     return response;

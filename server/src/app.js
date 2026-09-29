@@ -70,19 +70,22 @@ const authLimiter = rateLimit({
 });
 app.use('/api/auth', authLimiter);
 
-// ── 7. Health Check (no auth needed — for Render/uptime monitor) ──
+// ── 7. Health Check (no auth needed — for EC2/uptime monitor) ──
+// AWS_REGION and AWS_S3_BUCKET_NAME must be set in all environments.
+// AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY are intentionally NOT checked
+// here because on EC2 with an attached IAM role those env vars are absent —
+// the SDK obtains temporary credentials from the instance metadata service.
 app.get('/api/health', (_req, res) => {
   const awsConfigured = !!(
-    process.env.AWS_REGION && 
-    process.env.AWS_ACCESS_KEY_ID && 
-    process.env.AWS_SECRET_ACCESS_KEY
+    process.env.AWS_REGION &&
+    process.env.AWS_S3_BUCKET_NAME
   );
 
   const awsStatus = {
     configured: awsConfigured,
     region: process.env.AWS_REGION || 'missing',
     s3Bucket: process.env.AWS_S3_BUCKET_NAME || 'missing',
-    sesSender: process.env.SES_SENDER_EMAIL || process.env.SES_IDENTITY_ARN || 'missing',
+    sesSender: process.env.AWS_SES_SENDER_EMAIL || 'missing',
     textractReady: awsConfigured,
   };
 
