@@ -6,7 +6,7 @@
 [![AWS](https://img.shields.io/badge/Cloud-AWS%20ap--south--1-orange)](https://aws.amazon.com)
 
 
-🌐 **Live**: [http://cloudpms.kaifkhan.in](http://cloudpms.kaifkhan.in)
+🌐 **Live**: [https://cloudpms.kaifkhan.in](http://cloudpms.kaifkhan.in)
 
 ---
 
