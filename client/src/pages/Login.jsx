@@ -118,18 +118,18 @@ export default function Login() {
 
       {/* ── Right: Auth Form ─────────────────────────────────────── */}
       <div className="flex-1 bg-cream flex items-center justify-center p-6 sm:p-10">
-        <div className="w-full max-w-md cpm-card p-8 sm:p-10 bg-white">
+        <div className="w-full max-w-md cpm-card p-8 sm:p-10">
 
           {/* Mobile logo */}
           <div className="flex items-center gap-2.5 mb-8 lg:hidden">
             <div className="w-7 h-7 bg-navy-600 flex items-center justify-center" style={{ borderRadius: 1 }}>
               <span style={{ fontFamily: 'DM Mono', fontSize: 10, color: '#fff' }}>CP</span>
             </div>
-            <span style={{ fontFamily: 'Playfair Display', fontWeight: 700, fontSize: 15, color: '#172B4D' }}>CloudPMS</span>
+            <span style={{ fontFamily: 'Playfair Display', fontWeight: 700, fontSize: 15 }} className="text-ink">CloudPMS</span>
           </div>
 
           <div className="mb-8">
-            <h2 className="font-serif text-2xl font-bold text-navy-600">Welcome back</h2>
+            <h2 className="font-serif text-2xl font-bold text-ink">Welcome back</h2>
             <p className="font-sans text-sm text-muted mt-1">Sign in to your CloudPMS account</p>
           </div>
 
@@ -168,7 +168,7 @@ export default function Login() {
             <div>
               <div className="flex justify-between items-center mb-2">
                 <label className="form-label !mb-0">Password</label>
-                <Link to="/forgot-password" className="font-sans text-2xs font-semibold text-navy-600 hover:text-orange-600 transition-colors">
+                <Link to="/forgot-password" className="font-sans text-2xs font-semibold text-ink hover:text-orange-500 transition-colors">
                   Forgot password?
                 </Link>
               </div>
@@ -194,7 +194,7 @@ export default function Login() {
           {/* Footer */}
           <p className="font-sans text-sm text-muted mt-6 text-center">
             Don&apos;t have an account?{' '}
-            <Link to="/register" className="font-semibold text-navy-600 hover:text-orange-600 transition-colors">
+            <Link to="/register" className="font-semibold text-ink hover:text-orange-500 transition-colors">
               Create one
             </Link>
           </p>

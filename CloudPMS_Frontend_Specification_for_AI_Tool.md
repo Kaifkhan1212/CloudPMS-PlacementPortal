@@ -15,7 +15,7 @@
 - **Authentication**: JWT (JSON Web Tokens) + Google OAuth (`@react-oauth/google`)
 
 ## 3. Design System & Aesthetics
-The application implements a premium, high-contrast, and professional aesthetic suitable for educational institutions and corporate placements.
+The application implements a premium, high-contrast, and professional aesthetic suitable for educational institutions and corporate placements. It features a complete **Light and Dark Mode** system backed by CSS variables (`--bg-primary`, `--text-primary`, etc.) and a React context for state persistence.
 
 ### Color Palette
 - **Primary Navy**: `#172B4D` (Trust, corporate professionalism)

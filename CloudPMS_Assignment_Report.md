@@ -1,7 +1,6 @@
 # CloudPMS — DSCC / Cloud Computing Assignment Report
 
 **Cloud-Based Campus Placement Management System**
-MCA Final Year · Cloud Computing and Distributed Systems
 
 ---
 
@@ -78,6 +77,7 @@ CloudPMS follows the **Three-Tier Architecture** pattern, where each tier has a 
 ┌────────────────────────────────────────────────────────┐
 │  TIER 1 — Presentation                                 │
 │  React 19 SPA (built with Vite, Tailwind CSS)          │
+│  Premium UI with responsive Light/Dark Mode            │
 │  Served as static files by Nginx on EC2                │
 └──────────────────────┬─────────────────────────────────┘
                        │  RESTful HTTP API calls to /api/*
@@ -495,5 +495,4 @@ The use of an IAM instance profile for EC2 credentials, Nginx as a reverse proxy
 
 ---
 
-*CloudPMS · DSCC Cloud Computing Assignment · MCA Final Year*
 *AWS ap-south-1 · EC2 + S3 + Textract + SES + IAM · MongoDB Atlas · React 19 · Node.js · Nginx · PM2*

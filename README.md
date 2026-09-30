@@ -55,6 +55,7 @@ The application is deployed on **AWS EC2** in the `ap-south-1` region, served th
 - **Placement Cell drive management** — create, edit, close drives; view and filter applicants by status
 - **SES email notifications** — HTML-formatted emails dispatched on application status changes
 - **Admin dashboard** — user management, account status toggle, drive reports, summary statistics
+- **Premium UI with Dark Mode** — responsive, aesthetically pleasing interface with a seamless light/dark mode toggle backed by CSS variables and local storage persistence
 - **Google OAuth login** — `POST /api/auth/google` token exchange alongside standard email/password login
 - **JWT authentication** — short-lived access token + long-lived `httpOnly` refresh token cookie with MongoDB-backed invalidation
 

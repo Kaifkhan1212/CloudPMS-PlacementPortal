@@ -122,7 +122,7 @@ export default function StudentProfile() {
                   <div className="flex-1 bg-warm h-2 rounded-full overflow-hidden">
                     <div className="bg-orange-500 h-full transition-all duration-1000" style={{ width: `${completeness}%` }}></div>
                   </div>
-                  <span className="font-mono text-xs font-bold text-navy-600">{completeness}%</span>
+                  <span className="font-mono text-xs font-bold text-ink">{completeness}%</span>
                 </div>
               </div>
             </div>

@@ -133,7 +133,7 @@ export default function StudentApplications() {
                     </div>
 
                     {/* Timeline Tracker */}
-                    <div className="relative pt-4 pb-8 px-4 mt-4 border-t border-border/50">
+                    <div className="relative pt-4 pb-8 px-4 mt-4 border-t border-border">
                       <div className="tracker-rail">
                         <div className={`tracker-fill ${isRejected ? '!bg-slate-300' : ''}`} style={{ width: `${fillPercent}%` }} />
                         
@@ -161,9 +161,9 @@ export default function StudentApplications() {
                                 {nodeState === 'rejected' && label === 'Rejected' && <svg className="w-3 h-3 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12"/></svg>}
                               </div>
                               <div className={`absolute top-6 left-1/2 -translate-x-1/2 whitespace-nowrap font-sans text-xs font-semibold tracking-wide ${
-                                nodeState === 'current' ? 'text-orange-600' :
-                                nodeState === 'active' ? 'text-navy-600' :
-                                nodeState === 'rejected' && label === 'Rejected' ? 'text-slate-600' :
+                                nodeState === 'current' ? 'text-orange-500' :
+                                nodeState === 'active' ? 'text-ink' :
+                                nodeState === 'rejected' && label === 'Rejected' ? 'text-slate-500' :
                                 'text-subtle'
                               }`}>
                                 {label}

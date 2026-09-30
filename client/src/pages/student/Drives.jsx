@@ -89,7 +89,7 @@ export default function StudentDrives() {
 
                     {/* Package highlights */}
                     <div className="flex items-center gap-2">
-                      <span className="inline-block px-2.5 py-1 bg-green-50 text-green-700 font-mono text-sm font-bold rounded-sm border border-green-200">
+                      <span className="inline-block px-2.5 py-1 bg-success-50 text-success-700 font-mono text-sm font-bold rounded-sm border border-success-500">
                         {formatCTC(drive.ctc)}
                       </span>
                       {drive.venue && (
@@ -123,9 +123,9 @@ export default function StudentDrives() {
                   </div>
 
                   {/* Action Footer */}
-                  <div className="drive-card-footer mt-auto pt-4 border-t border-border/50">
+                  <div className="drive-card-footer mt-auto pt-4 border-t border-border">
                     {isApplied ? (
-                      <div className="w-full flex items-center justify-center gap-2 py-2.5 bg-success-50 text-success-700 font-sans text-sm font-semibold border border-success-500/20 rounded-sm">
+                      <div className="w-full flex items-center justify-center gap-2 py-2.5 bg-success-50 text-success-700 font-sans text-sm font-semibold border border-success-500 rounded-sm">
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                         </svg>

@@ -100,6 +100,7 @@ The entire application is accessible at `cloudpms.kaifkhan.in`, resolved through
 - Application status lifecycle: `Applied → Shortlisted → Interview Scheduled → Selected | Rejected`
 - Email notification on status update
 - Admin can toggle user account status and view system-wide reports
+- Premium UI with a user-configurable Light and Dark Mode system, persisting user preference locally
 
 ### Non-Functional Requirements
 

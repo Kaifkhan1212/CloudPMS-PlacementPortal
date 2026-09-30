@@ -45,11 +45,11 @@ export function PageHero({ title, subtitle, actions, children }) {
       <div className="page-hero-content">
         <div className="flex items-start justify-between flex-wrap gap-4">
           <div className="min-w-0">
-            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-white leading-tight">
+            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-ink leading-tight">
               {title}
             </h1>
             {subtitle && (
-              <p className="mt-1.5 text-sm text-navy-200 font-sans max-w-2xl leading-relaxed">
+              <p className="mt-1.5 text-sm text-muted font-sans max-w-2xl leading-relaxed">
                 {subtitle}
               </p>
             )}
@@ -126,7 +126,7 @@ export function CompanyAvatar({ name = '', size = 'md' }) {
 export function EmptyState({ icon, title, message, action }) {
   return (
     <div className="empty-state">
-      <div className="w-14 h-14 rounded-sm bg-navy-50 flex items-center justify-center mb-5 text-navy-300">
+      <div className="w-14 h-14 rounded-sm bg-warm flex items-center justify-center mb-5 text-muted">
         {icon || <Briefcase className="w-6 h-6" strokeWidth={1.5} />}
       </div>
       <h3 className="empty-state-title">{title}</h3>
@@ -154,7 +154,7 @@ export function GhostCard({ icon, title, description, onClick, buttonLabel }) {
 }
 
 /* ── Stat Card ─────────────────────────────────────────────────── */
-export function StatCard({ icon, label, value, sub, colorClass = 'bg-navy-50 text-navy-600' }) {
+export function StatCard({ icon, label, value, sub, colorClass = 'bg-warm text-muted' }) {
   return (
     <div className="cpm-stat-card">
       <div className="flex items-center gap-3">
@@ -204,10 +204,10 @@ export function ProgressRing({ value = 0, size = 56, strokeWidth = 5 }) {
   const offset = circumference - (value / 100) * circumference;
   return (
     <svg width={size} height={size} className="-rotate-90">
-      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#E8E4DB" strokeWidth={strokeWidth} />
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="var(--border-color)" strokeWidth={strokeWidth} />
       <circle
         cx={size/2} cy={size/2} r={r} fill="none"
-        stroke="#172B4D" strokeWidth={strokeWidth}
+        stroke="var(--orange-500)" strokeWidth={strokeWidth}
         strokeDasharray={circumference} strokeDashoffset={offset}
         strokeLinecap="round"
         style={{ transition: 'stroke-dashoffset 0.6s cubic-bezier(0.22,1,0.36,1)' }}
@@ -221,8 +221,8 @@ export function DeadlinePill({ daysText, isExpired }) {
   return (
     <span className={`inline-flex items-center gap-1 px-2 py-0.5 font-sans text-2xs font-semibold rounded-sm border ${
       isExpired ? 'bg-slate-50 text-slate-400 border-slate-200' :
-      daysText === 'Today' ? 'bg-error-50 text-error-700 border-error-500/30' :
-      'bg-orange-50 text-orange-700 border-orange-500/30'
+      daysText === 'Today' ? 'bg-error-50 text-error-700 border-error-500' :
+      'bg-orange-50 text-orange-700 border-orange-500'
     }`}>
       <Clock className="w-2.5 h-2.5" />
       {daysText}

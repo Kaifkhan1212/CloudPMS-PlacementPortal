@@ -205,7 +205,7 @@ export default function AdminDashboard() {
                       </div>
                     </td>
                     <td className="text-center font-sans font-medium text-muted">{b.total}</td>
-                    <td className="text-center font-sans font-bold text-navy-600">{b.placed}</td>
+                    <td className="text-center font-sans font-bold text-ink">{b.placed}</td>
                     <td className="text-center font-mono font-semibold text-ink">{b.placementPercent}%</td>
                     <td className="w-1/3">
                       <div className="progress-bar">

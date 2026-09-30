@@ -341,7 +341,7 @@ export default function PlacementDrives() {
                       {/* Right: Metrics & Actions */}
                       <div className="w-full sm:w-auto flex sm:flex-col items-center justify-between gap-4 border-t sm:border-t-0 sm:border-l border-border pt-4 sm:pt-0 sm:pl-6">
                         <div className="text-center sm:text-right w-full sm:w-auto">
-                          <p className="font-mono text-3xl font-bold text-navy-600 leading-none">{drive.applicantCount}</p>
+                          <p className="font-mono text-3xl font-bold text-ink leading-none">{drive.applicantCount}</p>
                           <p className="type-label mt-1">Applicants</p>
                         </div>
                         

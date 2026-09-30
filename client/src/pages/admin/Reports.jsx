@@ -86,13 +86,13 @@ export default function Reports() {
                         <div className="w-px h-8 bg-border"></div>
                         <div className="text-center min-w-[70px]">
                           <p className="type-label mb-0.5">Conversion</p>
-                          <p className="font-mono text-xl font-bold text-navy-600">{conversionRate}%</p>
+                          <p className="font-mono text-xl font-bold text-ink">{conversionRate}%</p>
                         </div>
                       </div>
                     </div>
 
                     {/* Funnel Pipeline */}
-                    <div className="p-6 bg-white flex flex-col">
+                    <div className="p-6 bg-card flex flex-col">
                       <p className="type-label mb-4">Applicant Pipeline</p>
                       
                       <div className="flex flex-wrap items-center gap-2">

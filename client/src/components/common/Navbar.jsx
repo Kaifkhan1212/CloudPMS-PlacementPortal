@@ -5,6 +5,7 @@ import {
   LogOut, ChevronDown
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import ThemeToggle from './ThemeToggle';
 
 const NAV_LINKS = {
   student: [
@@ -67,8 +68,8 @@ export default function Navbar() {
           </span>
           <span style={{
             fontFamily: 'Playfair Display', fontWeight: 700,
-            fontSize: 15, color: '#fff', letterSpacing: '0.01em'
-          }}>
+            fontSize: 15, letterSpacing: '0.01em'
+          }} className="text-ink">
             CloudPMS
           </span>
         </Link>
@@ -86,7 +87,7 @@ export default function Navbar() {
                   className={`topnav-link ${isActive ? 'active' : ''}`}
                 >
                   <Icon
-                    className={`w-3.5 h-3.5 ${isActive ? 'text-orange-400' : 'text-navy-300'}`}
+                    className={`w-3.5 h-3.5 ${isActive ? 'text-orange-500' : 'text-muted'}`}
                     strokeWidth={isActive ? 2.5 : 2}
                   />
                   {l.label}
@@ -99,9 +100,11 @@ export default function Navbar() {
         {/* Right side — user identity + sign out */}
         {user && (
           <div className="flex items-center gap-4">
+            <ThemeToggle />
+
             {/* Role badge (desktop) */}
             <span
-              className="hidden md:inline-flex items-center px-2.5 py-1 text-2xs font-semibold rounded-sm bg-white/10 text-navy-100 border border-white/10"
+              className="hidden md:inline-flex items-center px-2.5 py-1 text-2xs font-semibold rounded-sm bg-warm text-muted border border-border"
               style={{ letterSpacing: '0.04em' }}
             >
               {ROLE_LABELS[user.role]}
@@ -109,10 +112,10 @@ export default function Navbar() {
 
             {/* User name */}
             <div className="hidden sm:flex flex-col items-end leading-none">
-              <span style={{ fontFamily: 'DM Sans', fontWeight: 600, fontSize: 13, color: '#fff' }}>
+              <span className="font-sans font-semibold text-[13px] text-ink">
                 {user.name}
               </span>
-              <span style={{ fontFamily: 'DM Sans', fontSize: 10.5, color: '#94a3b8', marginTop: 2 }}>
+              <span className="font-sans text-[10.5px] text-subtle mt-0.5">
                 {user.email}
               </span>
             </div>
@@ -120,7 +123,7 @@ export default function Navbar() {
             {/* Sign out */}
             <button
               onClick={handleLogout}
-              className="flex items-center gap-1.5 text-navy-300 hover:text-white transition-colors duration-150 text-xs font-sans"
+              className="flex items-center gap-1.5 text-muted hover:text-ink transition-colors duration-150 text-xs font-sans"
               title="Sign out"
             >
               <LogOut className="w-3.5 h-3.5" />

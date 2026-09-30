@@ -121,11 +121,11 @@ export default function Register() {
             <div className="w-7 h-7 bg-navy-600 flex items-center justify-center" style={{ borderRadius: 1 }}>
               <span style={{ fontFamily: 'DM Mono', fontSize: 10, color: '#fff' }}>CP</span>
             </div>
-            <span style={{ fontFamily: 'Playfair Display', fontWeight: 700, fontSize: 15, color: '#172B4D' }}>CloudPMS</span>
+            <span style={{ fontFamily: 'Playfair Display', fontWeight: 700, fontSize: 15 }} className="text-ink">CloudPMS</span>
           </div>
 
           <div className="mb-8">
-            <h2 className="font-serif text-2xl font-bold text-navy-600">Create your account</h2>
+            <h2 className="font-serif text-2xl font-bold text-ink">Create your account</h2>
             <p className="font-sans text-sm text-muted mt-1">Choose your role to get started</p>
           </div>
 
@@ -144,12 +144,12 @@ export default function Register() {
                       onClick={() => setForm((f) => ({ ...f, role: r.value }))}
                       className={`relative p-3 text-left border rounded-sm transition-all duration-200 ${
                         isSelected
-                          ? 'border-navy-600 bg-navy-50 shadow-glow'
-                          : 'border-border bg-card hover:border-navy-300 hover:bg-warm'
+                          ? 'border-orange-500 bg-orange-50 shadow-glow'
+                          : 'border-border bg-card hover:border-orange-300 hover:bg-warm'
                       }`}
                     >
                       {isSelected && (
-                        <div className="absolute top-2 right-2 w-4 h-4 rounded-sm bg-navy-600 flex items-center justify-center">
+                        <div className="absolute top-2 right-2 w-4 h-4 rounded-sm bg-orange-500 flex items-center justify-center">
                           <Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />
                         </div>
                       )}
@@ -197,7 +197,7 @@ export default function Register() {
 
           <p className="font-sans text-sm text-muted mt-6 text-center">
             Already have an account?{' '}
-            <Link to="/login" className="font-semibold text-navy-600 hover:text-orange-600 transition-colors">
+            <Link to="/login" className="font-semibold text-ink hover:text-orange-500 transition-colors">
               Sign in
             </Link>
           </p>
