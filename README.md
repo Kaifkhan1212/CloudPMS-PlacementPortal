@@ -5,8 +5,6 @@
 [![MongoDB](https://img.shields.io/badge/Database-MongoDB%20Atlas-green)](https://www.mongodb.com/atlas)
 [![AWS](https://img.shields.io/badge/Cloud-AWS%20ap--south--1-orange)](https://aws.amazon.com)
 
-**MCA Final Year Project · DSCC / Cloud Computing**
-**Team of 3 · Deployed on AWS EC2 · Region: ap-south-1 (Mumbai)**
 
 🌐 **Live**: [http://cloudpms.kaifkhan.in](http://cloudpms.kaifkhan.in)
 
