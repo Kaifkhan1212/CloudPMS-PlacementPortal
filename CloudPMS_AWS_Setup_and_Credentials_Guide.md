@@ -308,14 +308,14 @@ Install Node.js 20 LTS via NodeSource:
 # Update package index
 sudo apt-get update
 
-# Install NodeSource repository for Node.js 20
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+# Install NodeSource repository for Node.js 22.x.
+curl -fsSL https://deb.nodesource.com/setup_22.x. | sudo -E bash -
 
 # Install Node.js (includes npm)
 sudo apt-get install -y nodejs
 
 # Verify
-node --version   # v20.x.x
+node --version   # v22.x.x
 npm --version    # 10.x.x
 ```
 
@@ -348,7 +348,7 @@ sudo apt-get install -y git
 cd ~
 
 # Clone the repository
-git clone https://github.com/YOUR_GITHUB_USERNAME/CloudPMS-PlacementPortal.git
+https://github.com/Kaifkhan1212/CloudPMS-PlacementPortal.git
 
 # Or if the repo is private, use a personal access token:
 # git clone https://YOUR_TOKEN@github.com/YOUR_GITHUB_USERNAME/CloudPMS-PlacementPortal.git
@@ -414,10 +414,10 @@ npm run build
 
 ```bash
 # Create the directory where Nginx will serve files
-sudo mkdir -p /var/www/cloudpms/dist
+sudo mkdir -p /var/www/cloudpms
 
 # Copy the build output
-sudo cp -r dist/* /var/www/cloudpms/dist/
+sudo cp -r dist/* /var/www/cloudpms/
 
 # Set ownership (so Nginx can read files)
 sudo chown -R www-data:www-data /var/www/cloudpms
