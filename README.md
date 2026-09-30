@@ -552,6 +552,4 @@ curl http://localhost:5000/api/health
 
 ## 20. Team
 
-**CloudPMS Team — MCA Final Year Project**
-
 *Built on AWS (EC2 · S3 · Textract · SES · IAM) · MongoDB Atlas · React 19 · Node.js · Nginx · PM2*
