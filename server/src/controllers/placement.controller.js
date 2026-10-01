@@ -268,7 +268,7 @@ const updateApplicationStatus = async (req, res, next) => {
         <p>${statusMessage}</p>
         <p>Regards,<br/>CloudPMS Placement Cell</p>
       `;
-      await sendEmail(application.student.user.email, emailSubject, emailBody);
+      await sendEmail(application.student.user.email, emailSubject, emailBody, { type: 'status_update', relatedDriveId: application.drive._id, relatedApplicationIds: [application._id], sentBy: req.user.userId });
     }
 
     return res.status(200).json(

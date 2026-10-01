@@ -55,7 +55,7 @@ export default function Login() {
       <PageTitle title="Sign In" />
 
       {/* ── Left: Brand Panel ──────────────────────────────────── */}
-      <div className="hidden lg:flex flex-col w-[42%] bg-navy-600 relative overflow-hidden">
+      <div className="hidden lg:flex flex-col w-[42%] relative overflow-hidden" style={{ background: '#172B4D' }}>
         {/* Dot grid */}
         <div
           className="absolute inset-0"
@@ -83,14 +83,14 @@ export default function Login() {
 
           {/* Main heading */}
           <div className="mt-auto mb-12">
-            <p className="font-sans text-xs font-semibold text-navy-300 uppercase tracking-widest mb-4">
+            <p className="font-sans text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: '#7A91BE' }}>
               Campus Placement Management
             </p>
-            <h1 className="font-serif text-4xl font-bold text-white leading-tight mb-4">
+            <h1 className="font-serif text-4xl font-bold leading-tight mb-4" style={{ color: '#FFFFFF' }}>
               Your campus career,<br />
-              <span className="text-orange-400">managed centrally.</span>
+              <span style={{ color: '#FB923C' }}>managed centrally.</span>
             </h1>
-            <p className="font-sans text-sm text-navy-200 leading-relaxed max-w-xs">
+            <p className="font-sans text-sm leading-relaxed max-w-xs" style={{ color: '#ADBAD9' }}>
               A unified platform connecting students, placement officers, and administrators for seamless campus recruitment.
             </p>
 
@@ -102,15 +102,15 @@ export default function Login() {
                     <Icon className="w-4 h-4 text-orange-400" strokeWidth={1.5} />
                   </div>
                   <div>
-                    <p className="font-sans text-xs font-semibold text-white">{label}</p>
-                    <p className="font-sans text-2xs text-navy-300">{desc}</p>
+                    <p className="font-sans text-xs font-semibold" style={{ color: '#FFFFFF' }}>{label}</p>
+                    <p className="font-sans text-2xs" style={{ color: '#7A91BE' }}>{desc}</p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          <p className="font-sans text-2xs text-navy-400 mt-auto">
+          <p className="font-sans text-2xs mt-auto" style={{ color: '#4D6EA3' }}>
             CloudPMS © {new Date().getFullYear()} — Cloud-Based Campus Placement System
           </p>
         </div>

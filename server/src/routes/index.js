@@ -18,11 +18,13 @@ const router = express.Router();
 const authRoutes      = require('./auth.routes');
 const studentRoutes   = require('./student.routes');
 const placementRoutes = require('./placement.routes');
+const emailRoutes     = require('./email.routes');
 const adminRoutes     = require('./admin.routes');
 
 router.use('/auth',      authRoutes);
 router.use('/students',  studentRoutes);
 router.use('/placement', placementRoutes);
+router.use('/placement-cell/emails', emailRoutes);
 router.use('/admin',     adminRoutes);
 
 module.exports = router;

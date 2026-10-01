@@ -259,7 +259,7 @@ const applyToDrive = async (req, res, next) => {
         <p>We will notify you when there is an update on your application status.</p>
         <p>Regards,<br/>CloudPMS Placement Cell</p>
       `;
-      await sendEmail(user.email, emailSubject, emailBody);
+      await sendEmail(user.email, emailSubject, emailBody, { type: 'application_confirmation', relatedDriveId: driveId, relatedApplicationIds: [application._id], sentBy: req.user.userId });
     }
 
     return res.status(201).json(

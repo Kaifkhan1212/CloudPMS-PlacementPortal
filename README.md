@@ -52,10 +52,12 @@ The application is deployed on **AWS EC2** in the `ap-south-1` region, served th
 - **Automated skill extraction** — AWS Textract processes uploaded resumes; detected skills are saved to the student profile
 - **Eligibility-filtered drive listing** — students see only drives they are eligible for (branch, CGPA, backlog criteria)
 - **Drive application workflow** — apply, track status through `Applied → Shortlisted → Interview Scheduled → Selected | Rejected`
-- **Placement Cell drive management** — create, edit, close drives; view and filter applicants by status
-- **SES email notifications** — HTML-formatted emails dispatched on application status changes
+- **Placement Cell drive management** — create, edit, close drives; view and filter applicants by status in a pipeline workspace
+- **Interview Workspace** — dedicated timeline view of all scheduled interviews across active drives with Today/Upcoming/Completed filters, candidate drawer, and Select/Reject/Reschedule actions
+- **Communication Center** — compose and send manual emails to targeted groups (all applicants, shortlisted, scheduled, selected, or custom); full email history log with search, filters, and detail view
+- **SES email notifications** — HTML-formatted emails dispatched on application status changes and manual sends; all emails (sent and failed) persisted in MongoDB `EmailLog` collection
 - **Admin dashboard** — user management, account status toggle, drive reports, summary statistics
-- **Premium UI with Dark Mode** — responsive, aesthetically pleasing interface with a seamless light/dark mode toggle backed by CSS variables and local storage persistence
+- **Premium global token-driven UI with Dark Mode** — fully tokenised CSS variable design system (`--bg-surface`, `--text`, `--accent`, etc.); intentional light and dark themes; responsive across all pages
 - **Google OAuth login** — `POST /api/auth/google` token exchange alongside standard email/password login
 - **JWT authentication** — short-lived access token + long-lived `httpOnly` refresh token cookie with MongoDB-backed invalidation
 
@@ -66,7 +68,7 @@ The application is deployed on **AWS EC2** in the `ap-south-1` region, served th
 | Role | Identifier | Key Capabilities |
 |---|---|---|
 | **Student** | `student` | Profile management, resume upload, view eligible drives, apply, track application status |
-| **Placement Cell** | `placement_cell` | Create/edit/close drives, view applicants, update application status and remarks |
+| **Placement Cell** | `placement_cell` | Create/edit/close drives, pipeline applicant management, interview workspace, communication center (compose + history) |
 | **Admin** | `admin` | All placement_cell permissions, user management, account toggle, placement reports, dashboard stats |
 
 ---

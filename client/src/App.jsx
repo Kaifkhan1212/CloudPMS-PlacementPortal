@@ -19,6 +19,8 @@ import StudentProfile from './pages/student/Profile';
 // Placement Cell Pages
 import PlacementDrives from './pages/placement/ManageDrives';
 import DriveApplicants from './pages/placement/DriveApplicants';
+import CommunicationCenter from './pages/placement/CommunicationCenter';
+import Interviews from './pages/placement/Interviews';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -94,6 +96,8 @@ export default function App() {
               <Route element={<ProtectedRoute allowedRoles={['placement_cell']} />}>
                 <Route path="/placement/drives" element={<PlacementDrives />} />
                 <Route path="/placement/drives/:driveId/applicants" element={<DriveApplicants />} />
+                <Route path="/placement/interviews" element={<Interviews />} />
+                <Route path="/placement/communication" element={<CommunicationCenter />} />
               </Route>
 
               {/* Admin Routes */}

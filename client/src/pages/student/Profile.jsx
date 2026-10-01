@@ -17,7 +17,7 @@ export default function StudentProfile() {
   const [saving, setSaving]       = useState(false);
   const [uploading, setUploading] = useState(false);
   const [editMode, setEditMode]   = useState(false);
-  const [form, setForm]           = useState({
+  const [form, setForm] = useState({
     rollNumber: '', branch: 'MCA', cgpa: '', backlogCount: 0,
     tenthPercent: '', twelfthPercent: '', skills: '',
   });
@@ -28,16 +28,16 @@ export default function StudentProfile() {
         const p = r.data.data.profile;
         setProfile(p);
         setForm({
-          rollNumber: p.rollNumber || '',
-          branch: p.branch || 'MCA',
-          cgpa: p.cgpa ?? '',
-          backlogCount: p.backlogCount ?? 0,
-          tenthPercent: p.tenthPercent ?? '',
-          twelfthPercent: p.twelfthPercent ?? '',
-          skills: (p.skills || []).join(', '),
+          rollNumber:    p.rollNumber || '',
+          branch:        p.branch || 'MCA',
+          cgpa:          p.cgpa ?? '',
+          backlogCount:  p.backlogCount ?? 0,
+          tenthPercent:  p.tenthPercent ?? '',
+          twelfthPercent:p.twelfthPercent ?? '',
+          skills:        (p.skills || []).join(', '),
         });
       })
-      .catch(() => setEditMode(true)) // No profile yet → open form
+      .catch(() => setEditMode(true))
       .finally(() => setLoading(false));
   }, []);
 
@@ -49,11 +49,11 @@ export default function StudentProfile() {
     try {
       const payload = {
         ...form,
-        cgpa: parseFloat(form.cgpa),
-        backlogCount: parseInt(form.backlogCount, 10),
-        tenthPercent: form.tenthPercent ? parseFloat(form.tenthPercent) : undefined,
-        twelfthPercent: form.twelfthPercent ? parseFloat(form.twelfthPercent) : undefined,
-        skills: form.skills ? form.skills.split(',').map((s) => s.trim()).filter(Boolean) : [],
+        cgpa:          parseFloat(form.cgpa),
+        backlogCount:  parseInt(form.backlogCount, 10),
+        tenthPercent:  form.tenthPercent  ? parseFloat(form.tenthPercent)  : undefined,
+        twelfthPercent:form.twelfthPercent ? parseFloat(form.twelfthPercent) : undefined,
+        skills:        form.skills ? form.skills.split(',').map(s => s.trim()).filter(Boolean) : [],
       };
       const r = await studentApi.upsertProfile(payload);
       setProfile(r.data.data.profile);
@@ -85,10 +85,9 @@ export default function StudentProfile() {
 
   if (loading) return <PageLoader />;
 
-  // Calculate completeness
-  let completeness = 30; // base identity
-  if (profile) completeness += 40; // academics
-  if (profile?.resumePath) completeness += 30; // resume
+  let completeness = 30;
+  if (profile)            completeness += 40;
+  if (profile?.resumePath) completeness += 30;
 
   return (
     <div className="animate-fade-rise">
@@ -99,30 +98,40 @@ export default function StudentProfile() {
       />
 
       <div className="page-container max-w-5xl flex flex-col lg:flex-row gap-8">
-        
-        {/* ── Left Column: Identity & Status ──────────────────── */}
-        <div className="w-full lg:w-1/3 space-y-6">
+
+        {/* ── Left Column ──────────────────────────────────────── */}
+        <div className="w-full lg:w-72 space-y-5 flex-shrink-0">
+
           {/* Identity Card */}
-          <div className="cpm-card relative overflow-hidden">
-            <div className="h-20 bg-navy-600"></div>
-            <div className="px-6 pb-6 relative">
-              <div className="absolute -top-10 left-6 rounded-full p-1 bg-card">
+          <div className="cpm-card overflow-hidden">
+            <div className="h-16 relative" style={{ background: 'var(--accent)' }}>
+              <div
+                className="absolute inset-0"
+                style={{ backgroundImage: 'radial-gradient(circle at 1.5px 1.5px, rgba(255,255,255,0.12) 1px, transparent 0)', backgroundSize: '16px 16px' }}
+              />
+            </div>
+            <div className="px-5 pb-5 relative">
+              <div
+                className="absolute -top-8 left-5 rounded-full p-1.5"
+                style={{ background: 'var(--bg-surface)' }}
+              >
                 <Avatar name={user?.name} size="lg" />
               </div>
-              <div className="mt-6 flex items-start justify-between">
-                <div>
-                  <h2 className="type-h3">{user?.name}</h2>
-                  <p className="type-body text-muted mt-0.5">{user?.email}</p>
-                </div>
+              <div className="mt-8 pt-2">
+                <h2 className="type-h3">{user?.name}</h2>
+                <p className="font-sans text-sm mt-0.5" style={{ color: 'var(--text-muted)' }}>{user?.email}</p>
               </div>
-              
-              <div className="mt-6 pt-4 border-t border-border">
-                <p className="type-label mb-2">Profile Completeness</p>
-                <div className="flex items-center gap-3">
-                  <div className="flex-1 bg-warm h-2 rounded-full overflow-hidden">
-                    <div className="bg-orange-500 h-full transition-all duration-1000" style={{ width: `${completeness}%` }}></div>
-                  </div>
-                  <span className="font-mono text-xs font-bold text-ink">{completeness}%</span>
+
+              {/* Completeness */}
+              <div className="mt-5 pt-4" style={{ borderTop: '1px solid var(--border)' }}>
+                <div className="flex items-center justify-between mb-2">
+                  <p className="type-label">Profile Complete</p>
+                  <span className="font-mono text-xs font-bold" style={{ color: 'var(--accent)' }}>
+                    {completeness}%
+                  </span>
+                </div>
+                <div className="progress-bar">
+                  <div className="progress-fill" style={{ width: `${completeness}%` }} />
                 </div>
               </div>
             </div>
@@ -130,27 +139,37 @@ export default function StudentProfile() {
 
           {/* Placement Status */}
           <div className="cpm-card">
-            <div className="card-header"><span className="type-h4">Placement Status</span></div>
-            <div className="card-body flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${profile?.isPlaced ? 'bg-success-50 text-success-600' : 'bg-info-50 text-info-600'}`}>
-                  {profile?.isPlaced ? <CheckCircle2 className="w-5 h-5" /> : <BookOpen className="w-5 h-5" />}
-                </div>
-                <div>
-                  <p className="type-body font-semibold">{profile?.isPlaced ? 'Placed' : 'Available for Placement'}</p>
-                  <p className="text-xs text-muted">{profile?.isPlaced ? 'Congratulations!' : 'Actively applying'}</p>
-                </div>
+            <div className="card-header">
+              <span className="type-h4">Placement Status</span>
+            </div>
+            <div className="card-body flex items-center gap-3">
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={profile?.isPlaced
+                  ? { background: 'var(--success-bg)', color: 'var(--success-text)' }
+                  : { background: 'var(--info-bg)', color: 'var(--info-text)' }
+                }
+              >
+                {profile?.isPlaced ? <CheckCircle2 className="w-5 h-5" /> : <BookOpen className="w-5 h-5" />}
+              </div>
+              <div>
+                <p className="font-sans font-semibold text-sm" style={{ color: 'var(--text)' }}>
+                  {profile?.isPlaced ? 'Placed' : 'Available'}
+                </p>
+                <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
+                  {profile?.isPlaced ? 'Congratulations!' : 'Actively applying'}
+                </p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* ── Right Column: Academics & Resume ──────────────── */}
-        <div className="flex-1 space-y-6">
-          
+        {/* ── Right Column ─────────────────────────────────────── */}
+        <div className="flex-1 space-y-5">
+
           {!profile && (
             <Alert type="warning">
-              <p className="font-semibold text-warning-700">Action Required: Academic Details Missing</p>
+              <p className="font-semibold" style={{ color: 'var(--warning-text)' }}>Action Required: Academic Details Missing</p>
               <p className="text-xs mt-1">You must save your academic details before you can upload a resume or apply to drives.</p>
             </Alert>
           )}
@@ -167,7 +186,7 @@ export default function StudentProfile() {
             </div>
             <div className="card-body">
               {editMode ? (
-                <form onSubmit={handleSave} className="space-y-6">
+                <form onSubmit={handleSave} className="space-y-5">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
                       <label className="form-label">Roll Number</label>
@@ -199,7 +218,7 @@ export default function StudentProfile() {
                   <div>
                     <label className="form-label">Skills</label>
                     <input className="form-input" placeholder="e.g. React, Node.js, Python, SQL" value={form.skills} onChange={set('skills')} />
-                    <p className="text-2xs text-subtle mt-1.5">Comma separated</p>
+                    <p className="text-2xs mt-1" style={{ color: 'var(--text-subtle)' }}>Comma separated</p>
                   </div>
                   <div className="flex items-center gap-3 pt-2">
                     <button type="submit" className="btn-primary" disabled={saving}>
@@ -215,26 +234,25 @@ export default function StudentProfile() {
               ) : profile ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-6 gap-x-4">
                   {[
-                    { label: 'Roll Number', value: profile.rollNumber, mono: true },
-                    { label: 'Branch', value: profile.branch, mono: false },
-                    { label: 'CGPA', value: profile.cgpa, mono: true },
-                    { label: 'Active Backlogs', value: profile.backlogCount, mono: true },
-                    { label: '10th %', value: profile.tenthPercent ? `${profile.tenthPercent}%` : '—', mono: true },
-                    { label: '12th %', value: profile.twelfthPercent ? `${profile.twelfthPercent}%` : '—', mono: true },
+                    { label: 'Roll Number',    value: profile.rollNumber,                             mono: true },
+                    { label: 'Branch',         value: profile.branch,                                 mono: false },
+                    { label: 'CGPA',           value: profile.cgpa,                                   mono: true },
+                    { label: 'Active Backlogs',value: profile.backlogCount,                            mono: true },
+                    { label: '10th %',         value: profile.tenthPercent  ? `${profile.tenthPercent}%`  : '—', mono: true },
+                    { label: '12th %',         value: profile.twelfthPercent ? `${profile.twelfthPercent}%` : '—', mono: true },
                   ].map(({ label, value, mono }) => (
                     <div key={label}>
                       <p className="type-label mb-1">{label}</p>
-                      <p className={`${mono ? 'type-mono' : 'type-body font-semibold'} text-ink`}>{value}</p>
+                      <p className={`${mono ? 'font-mono text-sm' : 'font-sans font-semibold text-sm'}`} style={{ color: 'var(--text)' }}>
+                        {value}
+                      </p>
                     </div>
                   ))}
-                  
                   {profile.skills?.length > 0 && (
-                    <div className="col-span-full pt-4 border-t border-border">
+                    <div className="col-span-full pt-4" style={{ borderTop: '1px solid var(--border)' }}>
                       <p className="type-label mb-3">Skills</p>
                       <div className="flex flex-wrap gap-2">
-                        {profile.skills.map((s) => (
-                          <span key={s} className="skill-tag">{s}</span>
-                        ))}
+                        {profile.skills.map((s) => <span key={s} className="skill-tag">{s}</span>)}
                       </div>
                     </div>
                   )}
@@ -245,23 +263,27 @@ export default function StudentProfile() {
 
           {/* Resume Card */}
           <div className="cpm-card">
-            <div className="card-header"><span className="type-h4">Resume Document</span></div>
+            <div className="card-header">
+              <span className="type-h4">Resume Document</span>
+            </div>
             <div className="card-body">
               <div className="flex items-center justify-between flex-wrap gap-4">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-red-50 text-red-600 rounded-sm border border-red-100 flex items-center justify-center flex-shrink-0">
+                  <div
+                    className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                    style={{ background: 'var(--error-bg)', color: 'var(--error-text)', border: '1px solid var(--error-border)' }}
+                  >
                     <FileText className="w-6 h-6" />
                   </div>
                   <div>
-                    <p className="font-sans font-semibold text-ink">
+                    <p className="font-sans font-semibold text-sm" style={{ color: 'var(--text)' }}>
                       {profile?.resumePath ? 'Professional_Resume.pdf' : 'No Resume Uploaded'}
                     </p>
-                    <p className="text-xs text-muted mt-0.5">
+                    <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
                       {!profile ? 'Complete academic details first' : 'PDF format, Max 5MB'}
                     </p>
                   </div>
                 </div>
-                
                 <div className="flex items-center gap-3">
                   {profile?.resumePath && (
                     <a href={profile.resumePath} target="_blank" rel="noreferrer" className="btn-secondary">
@@ -269,15 +291,9 @@ export default function StudentProfile() {
                     </a>
                   )}
                   <label
-                    className={`btn-primary ${
-                      !profile
-                        ? 'opacity-50 cursor-not-allowed'
-                        : uploading
-                        ? 'opacity-70 cursor-wait'
-                        : 'cursor-pointer'
-                    }`}
+                    className={`btn-primary ${!profile ? 'opacity-50 cursor-not-allowed' : uploading ? 'opacity-70 cursor-wait' : 'cursor-pointer'}`}
                   >
-                    <Upload className="w-4 h-4 mr-1.5" />
+                    <Upload className="w-4 h-4" />
                     {uploading ? 'Uploading...' : profile?.resumePath ? 'Replace' : 'Upload'}
                     <input
                       type="file"
@@ -291,7 +307,6 @@ export default function StudentProfile() {
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>

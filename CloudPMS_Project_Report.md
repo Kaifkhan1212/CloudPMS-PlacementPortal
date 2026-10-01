@@ -98,7 +98,9 @@ The entire application is accessible at `cloudpms.kaifkhan.in`, resolved through
 - Eligibility filter based on branch, minimum CGPA, and maximum backlogs
 - One application per student per drive (enforced at database index level)
 - Application status lifecycle: `Applied → Shortlisted → Interview Scheduled → Selected | Rejected`
-- Email notification on status update
+- Email notification on status update (automatic) and manual compose (placement cell)
+- All sent and failed emails persisted in MongoDB `EmailLog` collection
+- Placement Cell interview workspace: timeline view of all scheduled interviews across active drives
 - Admin can toggle user account status and view system-wide reports
 - Premium UI with a user-configurable Light and Dark Mode system, persisting user preference locally
 
@@ -149,7 +151,18 @@ The entire application is accessible at `cloudpms.kaifkhan.in`, resolved through
 - View applicants (`GET /api/placement/drives/:id/applicants`) — filterable by `?status=`
 - Update application status (`PATCH /api/placement/applications/:appId/status`) — status, remarks, optional interview date
 
-### 6.4 Admin Module
+### 6.4 Communication Center Module
+
+- Send manual email (`POST /api/placement/emails/send`) — recipient modes: `single`, `multiple`, `all_applicants`, `shortlisted`, `interview_scheduled`, `selected`
+- Recipients resolved server-side from MongoDB — no arbitrary email injection
+- Email log persisted in MongoDB regardless of SES success/failure
+- Fetch email logs (`GET /api/placement/emails`) — paginated, filterable by `type` and `status`, searchable by subject/recipient
+- Email log types: `manual`, `application_confirmation`, `status_update`
+- Email log statuses: `sent`, `failed` (includes `errorMessage` on failure)
+- Automatic emails (application confirmation + status update) are also logged via the same `sendEmail()` utility
+- Route group secured by `allowRoles('placement_cell', 'admin')` middleware
+
+### 6.5 Admin Module
 
 - Dashboard statistics (`GET /api/admin/dashboard`) — user counts, placement metrics
 - User management (`GET /api/admin/users`) — paginated list filterable by role

@@ -45,21 +45,23 @@ const parseResumeSkills = async (s3Key) => {
   }
 };
 
+const EmailLog = require('../models/EmailLog.model');
+
 /**
- * Send an email using AWS SES.
+ * Send an email using AWS SES and log it.
  * @param {string} to - Recipient email.
  * @param {string} subject - Email subject.
  * @param {string} htmlBody - Email body in HTML.
+ * @param {Object} logData - Data for EmailLog { type, relatedDriveId, relatedApplicationIds, sentBy }
  */
-const sendEmail = async (to, subject, htmlBody) => {
+const sendEmail = async (to, subject, htmlBody, logData = {}) => {
+  let status = 'sent';
+  let errorMessage = null;
+  const senderEmail = process.env.AWS_SES_SENDER_EMAIL || 'noreply@kaifkhan.in';
+
   try {
     const command = new SendEmailCommand({
-      // AWS_SES_SENDER_EMAIL must be a verified identity in SES.
-      // SourceArn is intentionally omitted: for normal same-account SES
-      // sending the SDK does not need it, and mixing it with a different
-      // verified identity (e.g. kaifkhan.in domain) would cause an
-      // authorization error when the Source address is a Gmail address.
-      Source: `"CloudPMS Placement Cell" <${process.env.AWS_SES_SENDER_EMAIL || 'noreply@kaifkhan.in'}>`,
+      Source: `"CloudPMS Placement Cell" <${senderEmail}>`,
       Destination: {
         ToAddresses: [to],
       },
@@ -70,10 +72,44 @@ const sendEmail = async (to, subject, htmlBody) => {
     });
 
     const response = await sesClient.send(command);
+    
+    // Log success
+    await EmailLog.create({
+      senderEmail,
+      senderName: 'CloudPMS Placement Cell',
+      recipients: [to],
+      subject,
+      messageText: htmlBody, // Saving raw/html body for reference
+      type: logData.type || 'status_update',
+      status: 'sent',
+      relatedDriveId: logData.relatedDriveId,
+      relatedApplicationIds: logData.relatedApplicationIds,
+      sentBy: logData.sentBy,
+    });
+
     return response;
   } catch (error) {
     console.error('Error sending email with SES:', error);
-    // Don't throw error to prevent application flow from breaking due to email failure
+    
+    // Log failure
+    try {
+      await EmailLog.create({
+        senderEmail,
+        senderName: 'CloudPMS Placement Cell',
+        recipients: [to],
+        subject,
+        messageText: htmlBody,
+        type: logData.type || 'status_update',
+        status: 'failed',
+        relatedDriveId: logData.relatedDriveId,
+        relatedApplicationIds: logData.relatedApplicationIds,
+        sentBy: logData.sentBy,
+        errorMessage: error.message,
+      });
+    } catch (dbError) {
+      console.error('Error saving EmailLog:', dbError);
+    }
+    
     return null;
   }
 };

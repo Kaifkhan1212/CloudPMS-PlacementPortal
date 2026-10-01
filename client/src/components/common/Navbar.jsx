@@ -2,10 +2,11 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
   Briefcase, FileText, User, LayoutDashboard, Users, BarChart2,
-  LogOut, ChevronDown
+  LogOut, Mail, Calendar
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import ThemeToggle from './ThemeToggle';
+import { Avatar } from './UI';
 
 const NAV_LINKS = {
   student: [
@@ -14,7 +15,9 @@ const NAV_LINKS = {
     { to: '/student/profile',      label: 'Profile',         icon: User },
   ],
   placement_cell: [
-    { to: '/placement/drives', label: 'Manage Drives', icon: Briefcase },
+    { to: '/placement/drives',        label: 'Manage Drives',  icon: Briefcase },
+    { to: '/placement/interviews',    label: 'Interviews',     icon: Calendar },
+    { to: '/placement/communication', label: 'Communication',  icon: Mail },
   ],
   admin: [
     { to: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -26,13 +29,7 @@ const NAV_LINKS = {
 const ROLE_LABELS = {
   student:        'Student',
   placement_cell: 'Placement Cell',
-  admin:          'Administrator',
-};
-
-const ROLE_COLORS = {
-  student:        'bg-info-50 text-info-700',
-  placement_cell: 'bg-orange-50 text-orange-700',
-  admin:          'bg-navy-50 text-navy-700',
+  admin:          'Admin',
 };
 
 export default function Navbar() {
@@ -54,29 +51,26 @@ export default function Navbar() {
 
         {/* Wordmark */}
         <Link to="/" className="flex items-center gap-2.5 flex-shrink-0">
-          {/* CP Institutional mark */}
           <span
-            className="flex items-center justify-center bg-orange-500 flex-shrink-0"
-            style={{ width: 28, height: 28, borderRadius: 1 }}
+            style={{
+              width: 28, height: 28, borderRadius: 5,
+              background: 'var(--accent)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0,
+            }}
           >
-            <span style={{
-              fontFamily: 'DM Mono', fontWeight: 400,
-              fontSize: 10.5, color: '#fff', letterSpacing: '0.06em'
-            }}>
+            <span style={{ fontFamily: 'DM Mono', fontWeight: 500, fontSize: 10, color: '#fff', letterSpacing: '0.06em' }}>
               CP
             </span>
           </span>
-          <span style={{
-            fontFamily: 'Playfair Display', fontWeight: 700,
-            fontSize: 15, letterSpacing: '0.01em'
-          }} className="text-ink">
+          <span style={{ fontFamily: 'Playfair Display', fontWeight: 700, fontSize: 15, color: 'var(--text)', letterSpacing: '0.01em' }}>
             CloudPMS
           </span>
         </Link>
 
         {/* Center nav links */}
         {user && (
-          <div className="hidden sm:flex items-end h-14 gap-1">
+          <div className="hidden sm:flex items-end h-14 gap-0.5">
             {links.map((l) => {
               const isActive = location.pathname.startsWith(l.to);
               const Icon = l.icon;
@@ -87,7 +81,8 @@ export default function Navbar() {
                   className={`topnav-link ${isActive ? 'active' : ''}`}
                 >
                   <Icon
-                    className={`w-3.5 h-3.5 ${isActive ? 'text-orange-500' : 'text-muted'}`}
+                    className="w-3.5 h-3.5"
+                    style={{ color: isActive ? 'var(--accent)' : 'var(--text-muted)' }}
                     strokeWidth={isActive ? 2.5 : 2}
                   />
                   {l.label}
@@ -97,33 +92,44 @@ export default function Navbar() {
           </div>
         )}
 
-        {/* Right side — user identity + sign out */}
+        {/* Right side — identity + controls */}
         {user && (
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <ThemeToggle />
 
-            {/* Role badge (desktop) */}
+            {/* Role badge */}
             <span
-              className="hidden md:inline-flex items-center px-2.5 py-1 text-2xs font-semibold rounded-sm bg-warm text-muted border border-border"
-              style={{ letterSpacing: '0.04em' }}
+              className="hidden md:inline-flex items-center px-2 py-0.5 text-2xs font-semibold rounded"
+              style={{
+                background: 'var(--bg-surface-2)',
+                color: 'var(--text-muted)',
+                border: '1px solid var(--border)',
+                letterSpacing: '0.03em',
+              }}
             >
               {ROLE_LABELS[user.role]}
             </span>
 
-            {/* User name */}
-            <div className="hidden sm:flex flex-col items-end leading-none">
-              <span className="font-sans font-semibold text-[13px] text-ink">
-                {user.name}
-              </span>
-              <span className="font-sans text-[10.5px] text-subtle mt-0.5">
-                {user.email}
-              </span>
+            {/* Avatar + name */}
+            <div className="hidden sm:flex items-center gap-2">
+              <Avatar name={user.name} size="sm" />
+              <div className="flex flex-col leading-none">
+                <span style={{ fontFamily: 'Inter', fontWeight: 600, fontSize: 13, color: 'var(--text)' }}>
+                  {user.name}
+                </span>
+                <span style={{ fontFamily: 'Inter', fontSize: 10.5, color: 'var(--text-muted)', marginTop: 2 }}>
+                  {user.email}
+                </span>
+              </div>
             </div>
 
             {/* Sign out */}
             <button
               onClick={handleLogout}
-              className="flex items-center gap-1.5 text-muted hover:text-ink transition-colors duration-150 text-xs font-sans"
+              className="flex items-center gap-1.5 transition-colors duration-150 text-xs font-sans"
+              style={{ color: 'var(--text-muted)' }}
+              onMouseEnter={e => e.currentTarget.style.color = 'var(--text)'}
+              onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
               title="Sign out"
             >
               <LogOut className="w-3.5 h-3.5" />

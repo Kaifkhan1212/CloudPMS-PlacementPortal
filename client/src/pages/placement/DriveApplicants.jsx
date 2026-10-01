@@ -1,235 +1,360 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { placementApi } from '../../api/placementApi';
 import { getApiError } from '../../utils/helpers';
-import { StatusBadge, EmptyState, PageLoader, Avatar, CompanyAvatar } from '../../components/common/UI';
+import { PageLoader, EmptyState, Avatar, StatusBadge } from '../../components/common/UI';
 import PageHero from '../../components/common/PageHero';
 import PageTitle from '../../components/common/PageTitle';
-import { Users, FileText, Download, Check, X, ArrowLeft } from 'lucide-react';
+import { Users, FileText, ArrowLeft, MoreHorizontal, Search, ChevronRight, CheckCircle2, Clock, XCircle, ChevronDown, Check, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-const STATUSES = ['Applied','Shortlisted','Interview Scheduled','Selected','Rejected'];
+const PIPELINE_STAGES = [
+  { id: 'Applied',             label: 'Applied',     color: 'var(--info-border)',    bg: 'var(--info-bg)',    text: 'var(--info-text)' },
+  { id: 'Shortlisted',         label: 'Shortlisted', color: 'var(--purple-border)',  bg: 'var(--purple-bg)',  text: 'var(--purple-text)' },
+  { id: 'Interview Scheduled', label: 'Interview',   color: 'var(--warning-border)', bg: 'var(--warning-bg)', text: 'var(--warning-text)' },
+  { id: 'Selected',            label: 'Selected',    color: 'var(--success-border)', bg: 'var(--success-bg)', text: 'var(--success-text)' },
+  { id: 'Rejected',            label: 'Rejected',    color: 'var(--error-border)',   bg: 'var(--error-bg)',   text: 'var(--error-text)' },
+];
 
 export default function DriveApplicants() {
-  const { driveId }                 = useParams();
-  const [data, setData]             = useState(null);
-  const [loading, setLoading]       = useState(true);
-  const [filter, setFilter]         = useState('All');
-  const [updating, setUpdating]     = useState(null);
-  const [remarkModal, setRemarkModal] = useState(null);
-  const [remark, setRemark]         = useState('');
+  const { driveId } = useParams();
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(null);
+
+  // Filters
+  const [search, setSearch] = useState('');
+  const [branchFilter, setBranchFilter] = useState('');
+  const [minCgpa, setMinCgpa] = useState('');
+
+  // Modals / Drawers
+  const [activeCandidate, setActiveCandidate] = useState(null);
+  const [actionModal, setActionModal] = useState(null);
+  const [remark, setRemark] = useState('');
   const [interviewDate, setInterviewDate] = useState('');
 
-  const fetchApplicants = (status) =>
-    placementApi.getDriveApplicants(driveId, status !== 'All' ? { status } : {})
+  const fetchApplicants = () =>
+    placementApi.getDriveApplicants(driveId, {}) // fetch all to build pipeline
       .then((r) => setData(r.data.data))
       .catch((err) => toast.error(getApiError(err)))
       .finally(() => setLoading(false));
 
-  useEffect(() => { fetchApplicants(filter); }, [filter]);
+  useEffect(() => { fetchApplicants(); }, [driveId]);
 
-  const openModal = (appId, status) => {
-    setRemarkModal({ appId, status });
-    setRemark('');
-    setInterviewDate('');
-  };
-
-  const confirmUpdate = async () => {
-    const { appId, status } = remarkModal;
+  const confirmAction = async () => {
+    if (!actionModal) return;
+    const { appId, status } = actionModal;
     setUpdating(appId);
-    setRemarkModal(null);
     try {
       await placementApi.updateAppStatus(appId, {
         status,
         remarks: remark || undefined,
         interviewDate: interviewDate || undefined,
       });
-      toast.success(`Applicant status moved to "${status}"`);
-      fetchApplicants(filter);
+      toast.success(`Moved to ${status}`);
+      // Update local state immediately for snappy UI
+      setData(prev => {
+        const apps = prev.applications.map(a => 
+          a._id === appId ? { ...a, status, remarks: remark, interviewDate: interviewDate } : a
+        );
+        return { ...prev, applications: apps };
+      });
+      if (activeCandidate?._id === appId) {
+        setActiveCandidate(prev => ({ ...prev, status, remarks: remark, interviewDate: interviewDate }));
+      }
     } catch (err) {
       toast.error(getApiError(err));
     } finally {
       setUpdating(null);
+      setActionModal(null);
+      setRemark('');
+      setInterviewDate('');
     }
   };
 
+  const applications = data?.applications || [];
+  const drive = data?.drive;
+
+  const filteredApps = useMemo(() => {
+    return applications.filter(app => {
+      const s = app.student;
+      if (!s) return false;
+      const matchSearch = s.user?.name?.toLowerCase().includes(search.toLowerCase()) || s.user?.email?.toLowerCase().includes(search.toLowerCase()) || s.rollNumber?.toLowerCase().includes(search.toLowerCase());
+      const matchBranch = branchFilter ? s.branch === branchFilter : true;
+      const matchCgpa = minCgpa ? (s.cgpa >= parseFloat(minCgpa)) : true;
+      return matchSearch && matchBranch && matchCgpa;
+    });
+  }, [applications, search, branchFilter, minCgpa]);
+
   if (loading) return <PageLoader />;
 
-  const applications = data?.applications || [];
-  const drive        = data?.drive;
-
   return (
-    <div className="animate-fade-rise relative min-h-screen">
-      <PageTitle title={drive ? `${drive.company} — Applicants` : 'Applicants'} />
-      <PageHero
-        title={drive ? drive.company : 'Drive Applicants'}
-        subtitle={drive ? `Managing applicants for the ${drive.jobRole} role.` : 'Managing applicants.'}
-        actions={
-          <Link to="/placement/drives" className="btn-secondary !bg-white/10 !text-white !border-white/20 hover:!bg-white/20">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Drives
-          </Link>
-        }
-      >
-        {drive && (
-          <div className="mt-6 flex flex-wrap items-center gap-6 text-sm text-navy-200">
-            <div className="flex items-center gap-2">
-              <Users className="w-4 h-4 text-orange-400" />
-              <span className="font-mono text-white text-base font-bold">{data?.count ?? 0}</span> Total Applicants
-            </div>
+    <div className="animate-fade-rise flex flex-col h-screen overflow-hidden" style={{ background: 'var(--bg-page)' }}>
+      <PageTitle title={drive ? `${drive.company} — Workspace` : 'Workspace'} />
+      
+      {/* Workspace Header */}
+      <div className="flex-shrink-0 px-4 md:px-8 py-4 border-b z-10" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border)' }}>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 max-w-screen-2xl mx-auto">
+          <div>
+            <Link to="/placement/drives" className="inline-flex items-center gap-1.5 text-xs font-semibold mb-2 transition-colors" style={{ color: 'var(--text-muted)' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--text)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}>
+              <ArrowLeft className="w-3.5 h-3.5" /> Back to Drives
+            </Link>
+            <h1 className="type-h3 flex items-center gap-3">
+              {drive?.company} <span className="font-sans text-sm font-normal px-2 py-0.5 rounded border" style={{ color: 'var(--text-muted)', borderColor: 'var(--border)', background: 'var(--bg-surface-2)' }}>{drive?.jobRole}</span>
+            </h1>
           </div>
-        )}
-      </PageHero>
 
-      <div className="page-container max-w-7xl">
-        
-        {/* Filters */}
-        <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide">
-          {['All', ...STATUSES].map((s) => {
-            const isActive = filter === s;
+          {/* Filters */}
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-muted)' }} />
+              <input type="text" placeholder="Search candidate..." className="form-input !py-1.5 !pl-8 text-sm w-48" value={search} onChange={e => setSearch(e.target.value)} />
+            </div>
+            <select className="form-select !py-1.5 text-sm w-32" value={branchFilter} onChange={e => setBranchFilter(e.target.value)}>
+              <option value="">All Branches</option>
+              <option value="MCA">MCA</option>
+              <option value="BCA">BCA</option>
+              <option value="BBA">BBA</option>
+              <option value="BSc IT">BSc IT</option>
+            </select>
+            <select className="form-select !py-1.5 text-sm w-32" value={minCgpa} onChange={e => setMinCgpa(e.target.value)}>
+              <option value="">Any CGPA</option>
+              <option value="6.0">6.0+</option>
+              <option value="7.0">7.0+</option>
+              <option value="8.0">8.0+</option>
+              <option value="9.0">9.0+</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Pipeline Board */}
+      <div className="flex-1 overflow-x-auto overflow-y-hidden p-4 md:p-8" style={{ background: 'var(--bg-page)' }}>
+        <div className="flex gap-6 h-full max-w-screen-2xl mx-auto items-start">
+          {PIPELINE_STAGES.map((stage) => {
+            const stageApps = filteredApps.filter(a => a.status === stage.id);
             return (
-              <button
-                key={s}
-                onClick={() => setFilter(s)}
-                className={`inline-flex items-center px-4 py-2 rounded-sm text-sm font-sans font-medium transition-all flex-shrink-0 ${
-                  isActive
-                    ? 'bg-navy-600 text-white shadow-sm'
-                    : 'bg-card text-muted border border-border hover:bg-warm hover:text-ink'
-                }`}
-              >
-                {s}
-              </button>
+              <div key={stage.id} className="flex-shrink-0 w-80 flex flex-col h-full rounded-xl overflow-hidden border" style={{ background: 'var(--bg-surface-2)', borderColor: 'var(--border)' }}>
+                {/* Column Header */}
+                <div className="px-4 py-3 border-b flex justify-between items-center" style={{ borderColor: 'var(--border)', background: stage.bg }}>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full" style={{ background: stage.color }} />
+                    <h3 className="font-sans font-semibold text-sm" style={{ color: stage.text }}>{stage.label}</h3>
+                  </div>
+                  <span className="px-2 py-0.5 rounded font-mono text-xs font-bold" style={{ background: 'rgba(255,255,255,0.4)', color: stage.text }}>
+                    {stageApps.length}
+                  </span>
+                </div>
+
+                {/* Candidate Cards */}
+                <div className="flex-1 overflow-y-auto p-3 space-y-3 scrollbar-hide">
+                  {stageApps.map(app => (
+                    <CandidateCard 
+                      key={app._id} 
+                      app={app} 
+                      onClick={() => setActiveCandidate(app)}
+                      onAction={(newStatus) => setActionModal({ appId: app._id, status: newStatus, current: app.status })}
+                      isActive={activeCandidate?._id === app._id}
+                    />
+                  ))}
+                  {stageApps.length === 0 && (
+                    <div className="py-8 text-center border-2 border-dashed rounded-lg" style={{ borderColor: 'var(--border)' }}>
+                      <p className="text-xs" style={{ color: 'var(--text-subtle)' }}>No candidates</p>
+                    </div>
+                  )}
+                </div>
+              </div>
             );
           })}
         </div>
+      </div>
 
-        {applications.length === 0 ? (
-          <div className="mt-12">
-            <EmptyState 
-              icon={<Users className="w-8 h-8" />} 
-              title="No applicants found" 
-              message={filter === 'All' ? "No students have applied to this drive yet." : `There are no applicants with the status '${filter}'.`} 
-            />
-          </div>
-        ) : (
-          <div className="cpm-card overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="cpm-table cpm-table-zebra w-full">
-                <thead>
-                  <tr>
-                    <th>Candidate</th>
-                    <th>Roll No.</th>
-                    <th>Branch</th>
-                    <th>CGPA</th>
-                    <th className="text-center">Backlogs</th>
-                    <th>Resume</th>
-                    <th>Current Status</th>
-                    <th>Update Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {applications.map((app) => {
-                    const s = app.student;
-                    return (
-                      <tr key={app._id}>
-                        <td>
-                          <div className="flex items-center gap-3">
-                            <Avatar name={s?.user?.name} size="sm" />
-                            <div>
-                              <div className="font-sans font-semibold text-ink">{s?.user?.name}</div>
-                              <div className="text-xs text-muted mt-0.5">{s?.user?.email}</div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="font-mono text-xs">{s?.rollNumber}</td>
-                        <td className="font-sans font-medium">{s?.branch}</td>
-                        <td className="font-mono text-sm font-semibold">{s?.cgpa}</td>
-                        <td className="text-center font-mono text-sm">{s?.backlogCount}</td>
-                        <td>
-                          {s?.resumePath ? (
-                            <a href={s.resumePath} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-navy-600 hover:text-orange-600 font-sans text-xs font-semibold transition-colors">
-                              <FileText className="w-3.5 h-3.5" /> View PDF
-                            </a>
-                          ) : (
-                            <span className="text-subtle text-xs">—</span>
-                          )}
-                        </td>
-                        <td>
-                          <div className="flex flex-col gap-1.5 items-start">
-                            <StatusBadge status={app.status} />
-                            {app.remarks && <p className="text-2xs text-muted max-w-[140px] truncate" title={app.remarks}>{app.remarks}</p>}
-                          </div>
-                        </td>
-                        <td>
-                          <div className="flex flex-wrap gap-1.5">
-                            {STATUSES.filter((s) => s !== app.status).map((nextStatus) => {
-                              // Simplified actions visually
-                              let btnClass = "px-2 py-1 text-2xs font-sans font-semibold rounded-sm transition-colors border ";
-                              if (nextStatus === 'Selected')   btnClass += "bg-success-50 text-success-700 border-success-200 hover:bg-success-100";
-                              else if (nextStatus === 'Rejected') btnClass += "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100 hover:text-slate-900";
-                              else if (nextStatus === 'Shortlisted') btnClass += "bg-info-50 text-info-700 border-info-200 hover:bg-info-100";
-                              else btnClass += "bg-orange-50 text-orange-700 border-orange-200 hover:bg-orange-100";
-
-                              return (
-                                <button
-                                  key={nextStatus}
-                                  onClick={() => openModal(app._id, nextStatus)}
-                                  disabled={updating === app._id}
-                                  className={btnClass}
-                                >
-                                  {nextStatus}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+      {/* Candidate Drawer Modal (Slide over) */}
+      {activeCandidate && (
+        <div className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-sm animate-fade-in">
+          <div className="w-full max-w-md h-full shadow-card-lg animate-slide-in flex flex-col" style={{ background: 'var(--bg-surface)' }}>
+            <div className="p-5 border-b flex justify-between items-center" style={{ borderColor: 'var(--border)' }}>
+              <h2 className="type-h4 mb-0">Candidate Details</h2>
+              <button onClick={() => setActiveCandidate(null)} className="p-1 rounded hover:bg-surface-2 transition-colors" style={{ color: 'var(--text-muted)' }}>
+                <X className="w-5 h-5" />
+              </button>
             </div>
-          </div>
-        )}
-
-        {/* Remark Modal */}
-        {remarkModal && (
-          <div className="fixed inset-0 bg-navy-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
-            <div className="cpm-card w-full max-w-md p-6 shadow-card-lg animate-fade-rise">
-              <div className="flex items-center justify-between mb-5 pb-4 border-b border-border">
-                <h2 className="type-h3">Update Status</h2>
-                <button onClick={() => setRemarkModal(null)} className="text-muted hover:text-ink transition-colors">
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-              
-              <div className="mb-6 flex items-center gap-3 p-3 bg-warm rounded-sm border border-border">
-                <span className="type-label mb-0">Moving to:</span>
-                <StatusBadge status={remarkModal.status} />
-              </div>
-
-              <div className="space-y-4">
-                {remarkModal.status === 'Interview Scheduled' && (
-                  <div>
-                    <label className="form-label">Interview Date & Time</label>
-                    <input type="datetime-local" className="form-input font-mono text-sm"
-                      value={interviewDate} onChange={(e) => setInterviewDate(e.target.value)} />
-                  </div>
-                )}
+            
+            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+              {/* Profile Header */}
+              <div className="flex items-center gap-4">
+                <Avatar name={activeCandidate.student?.user?.name} size="lg" />
                 <div>
-                  <label className="form-label">Internal Remarks / Notes (Optional)</label>
-                  <textarea className="form-textarea h-24" placeholder="Add notes for the student or internal reference..."
-                    value={remark} onChange={(e) => setRemark(e.target.value)} />
+                  <h3 className="type-h3">{activeCandidate.student?.user?.name}</h3>
+                  <p className="text-sm font-medium" style={{ color: 'var(--text-muted)' }}>{activeCandidate.student?.user?.email}</p>
+                  <div className="mt-2"><StatusBadge status={activeCandidate.status} /></div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 mt-6 pt-5 border-t border-border">
-                <button className="btn-primary flex-1" onClick={confirmUpdate}>Confirm Update</button>
-                <button className="btn-secondary flex-1" onClick={() => setRemarkModal(null)}>Cancel</button>
+              {/* Academic Grid */}
+              <div className="grid grid-cols-2 gap-4 p-4 rounded-lg border" style={{ background: 'var(--bg-surface-2)', borderColor: 'var(--border)' }}>
+                <div><p className="type-label mb-1">Roll Number</p><p className="font-mono text-sm font-bold" style={{ color: 'var(--text)' }}>{activeCandidate.student?.rollNumber}</p></div>
+                <div><p className="type-label mb-1">Branch</p><p className="font-sans text-sm font-bold" style={{ color: 'var(--text)' }}>{activeCandidate.student?.branch}</p></div>
+                <div><p className="type-label mb-1">CGPA</p><p className="font-mono text-sm font-bold" style={{ color: 'var(--text)' }}>{activeCandidate.student?.cgpa}</p></div>
+                <div><p className="type-label mb-1">Backlogs</p><p className="font-mono text-sm font-bold" style={{ color: 'var(--text)' }}>{activeCandidate.student?.backlogCount}</p></div>
+              </div>
+
+              {/* Skills */}
+              {activeCandidate.student?.skills?.length > 0 && (
+                <div>
+                  <p className="type-label mb-2">Technical Skills</p>
+                  <div className="flex flex-wrap gap-2">
+                    {activeCandidate.student.skills.map(s => (
+                      <span key={s} className="px-2 py-1 rounded text-xs font-medium border" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border)', color: 'var(--text-muted)' }}>{s}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Resume */}
+              <div>
+                <p className="type-label mb-2">Resume</p>
+                {activeCandidate.student?.resumePath ? (
+                  <a href={activeCandidate.student.resumePath} target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 rounded border hover:border-accent transition-colors group" style={{ background: 'var(--bg-surface-2)', borderColor: 'var(--border)' }}>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded flex items-center justify-center bg-accent text-white"><FileText className="w-4 h-4" /></div>
+                      <div>
+                        <p className="text-sm font-semibold" style={{ color: 'var(--text)' }}>View Document</p>
+                        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>PDF Format</p>
+                      </div>
+                    </div>
+                    <ChevronRight className="w-4 h-4 group-hover:text-accent transition-colors" style={{ color: 'var(--text-muted)' }} />
+                  </a>
+                ) : (
+                  <p className="text-sm italic" style={{ color: 'var(--text-subtle)' }}>No resume uploaded</p>
+                )}
+              </div>
+
+              {/* Remarks */}
+              {activeCandidate.remarks && (
+                <div>
+                  <p className="type-label mb-2">Internal Remarks</p>
+                  <div className="p-3 rounded text-sm border" style={{ background: 'var(--warning-bg)', borderColor: 'var(--warning-border)', color: 'var(--warning-text)' }}>
+                    {activeCandidate.remarks}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Drawer Actions */}
+            <div className="p-5 border-t" style={{ background: 'var(--bg-surface-2)', borderColor: 'var(--border)' }}>
+              <p className="type-label mb-3">Update Status</p>
+              <div className="flex flex-wrap gap-2">
+                {PIPELINE_STAGES.filter(s => s.id !== activeCandidate.status).map(stage => (
+                  <button
+                    key={stage.id}
+                    onClick={() => { setActionModal({ appId: activeCandidate._id, status: stage.id, current: activeCandidate.status }); setActiveCandidate(null); }}
+                    className="flex-1 py-2 px-3 rounded text-xs font-bold border transition-colors text-center"
+                    style={{ background: 'var(--bg-surface)', borderColor: stage.color, color: stage.text }}
+                    onMouseEnter={e => e.currentTarget.style.background = stage.bg}
+                    onMouseLeave={e => e.currentTarget.style.background = 'var(--bg-surface)'}
+                  >
+                    Move to {stage.label}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
-        )}
+        </div>
+      )}
+
+      {/* Action Modal */}
+      {actionModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
+          <div className="cpm-card w-full max-w-md p-6 shadow-card-lg animate-fade-rise">
+            <div className="flex items-center justify-between mb-5 pb-4 border-b" style={{ borderColor: 'var(--border)' }}>
+              <h2 className="type-h3">Confirm Status Change</h2>
+              <button onClick={() => setActionModal(null)} className="text-muted hover:text-ink transition-colors"><X className="w-5 h-5" /></button>
+            </div>
+            
+            <div className="mb-6 flex items-center justify-center gap-4 p-4 rounded-lg border" style={{ background: 'var(--bg-surface-2)', borderColor: 'var(--border)' }}>
+              <div className="text-center">
+                <p className="text-xs font-semibold mb-1" style={{ color: 'var(--text-muted)' }}>From</p>
+                <StatusBadge status={actionModal.current} />
+              </div>
+              <ChevronRight className="w-5 h-5" style={{ color: 'var(--border-strong)' }} />
+              <div className="text-center">
+                <p className="text-xs font-semibold mb-1" style={{ color: 'var(--text-muted)' }}>To</p>
+                <StatusBadge status={actionModal.status} />
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {actionModal.status === 'Interview Scheduled' && (
+                <div>
+                  <label className="form-label">Interview Date & Time</label>
+                  <input type="datetime-local" className="form-input font-mono text-sm" value={interviewDate} onChange={(e) => setInterviewDate(e.target.value)} />
+                </div>
+              )}
+              <div>
+                <label className="form-label">Internal Note (Optional)</label>
+                <textarea className="form-textarea h-24" placeholder="Feedback or context for this decision..." value={remark} onChange={(e) => setRemark(e.target.value)} />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 mt-6 pt-5 border-t" style={{ borderColor: 'var(--border)' }}>
+              <button className="btn-primary flex-1 py-2.5" onClick={confirmAction} disabled={updating === actionModal.appId}>
+                {updating === actionModal.appId ? 'Updating...' : 'Confirm'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Subcomponent for the pipeline card
+function CandidateCard({ app, onClick, onAction, isActive }) {
+  const s = app.student;
+  if (!s) return null;
+
+  return (
+    <div 
+      className={`cpm-card p-3 cursor-pointer transition-all duration-200 border-2 ${isActive ? 'shadow-card-md' : 'hover:shadow-card'}`}
+      style={{ borderColor: isActive ? 'var(--accent)' : 'transparent', background: 'var(--bg-surface)' }}
+      onClick={onClick}
+    >
+      <div className="flex items-start justify-between mb-2">
+        <div className="font-sans font-bold text-sm" style={{ color: 'var(--text)' }}>
+          {s.user?.name}
+        </div>
+        <div className="font-mono text-xs font-semibold px-1.5 py-0.5 rounded border" style={{ background: 'var(--bg-surface-2)', borderColor: 'var(--border)', color: 'var(--text-muted)' }}>
+          {s.cgpa}
+        </div>
+      </div>
+      
+      <div className="flex items-center gap-2 mb-3 text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
+        <span className="truncate">{s.branch}</span>
+        <span className="w-1 h-1 rounded-full" style={{ background: 'var(--border-strong)' }} />
+        <span>{s.rollNumber}</span>
+      </div>
+
+      <div className="flex items-center justify-between mt-3 pt-3 border-t" style={{ borderColor: 'var(--border)' }}>
+        <div className="flex -space-x-1">
+          {/* Mock interviewers / reviewers could go here. For now, show resume badge */}
+          {s.resumePath ? (
+            <span className="flex items-center gap-1 text-2xs font-bold uppercase tracking-wider px-1.5 py-0.5 rounded" style={{ background: 'var(--info-bg)', color: 'var(--info-text)' }}>
+              <FileText className="w-3 h-3" /> PDF
+            </span>
+          ) : (
+            <span className="text-2xs text-subtle italic">No Resume</span>
+          )}
+        </div>
+        
+        {/* Quick actions dropdown trigger placeholder, click card to open drawer is better UX for now */}
+        <button 
+          onClick={(e) => { e.stopPropagation(); onClick(); }}
+          className="text-2xs font-semibold px-2 py-1 rounded hover:bg-surface-2 transition-colors" 
+          style={{ color: 'var(--accent)', border: '1px solid var(--accent)' }}
+        >
+          Review
+        </button>
       </div>
     </div>
   );
