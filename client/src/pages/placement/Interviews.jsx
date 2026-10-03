@@ -169,18 +169,18 @@ export default function Interviews() {
           </div>
 
           <div className="flex items-center gap-3 w-full md:w-auto flex-wrap">
-            <div className="relative flex-1 md:w-56">
+            <div className="relative flex-1 md:w-56 min-w-0">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" style={{ color: 'var(--text-muted)' }} />
               <input
                 type="text"
                 placeholder="Search candidate..."
-                className="form-input !pl-9"
+                className="form-input !pl-9 w-full"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
             <select 
-              className="form-select flex-1 md:w-48" 
+              className="form-select flex-1 md:w-48 min-w-0" 
               value={companyFilter} 
               onChange={e => setCompanyFilter(e.target.value)}
             >
@@ -224,7 +224,7 @@ export default function Interviews() {
                   </div>
 
                   {/* Card */}
-                  <div className="cpm-card flex-1 flex flex-col md:flex-row gap-5 p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-card-md" style={{ borderLeft: `4px solid ${isCompleted ? (isSelected ? 'var(--success-border)' : 'var(--error-border)') : 'var(--accent)'}` }}>
+                  <div className="interview-card cpm-card flex-1 flex flex-col md:flex-row gap-4 p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-card-md" style={{ borderLeft: `4px solid ${isCompleted ? (isSelected ? 'var(--success-border)' : 'var(--error-border)') : 'var(--accent)'}` }}>
                     
                     {/* Left: Time & Candidate */}
                     <div className="flex-1 flex items-start gap-4">
@@ -251,7 +251,7 @@ export default function Interviews() {
                     </div>
 
                     {/* Right: Drive & Status */}
-                    <div className="md:w-64 flex flex-col md:items-end justify-center md:text-right gap-3 border-t md:border-t-0 pt-4 md:pt-0" style={{ borderColor: 'var(--border)' }}>
+                    <div className="interview-card-right md:w-64 flex flex-col md:items-end justify-center md:text-right gap-3 border-t md:border-t-0 pt-4 md:pt-0" style={{ borderColor: 'var(--border)' }}>
                       <div>
                         <p className="font-sans font-bold text-sm" style={{ color: 'var(--text)' }}>{inv.drive.company}</p>
                         <p className="font-sans text-xs font-medium mt-0.5" style={{ color: 'var(--text-muted)' }}>{inv.drive.jobRole}</p>
@@ -312,19 +312,19 @@ export default function Interviews() {
               <div className="p-4 rounded-lg border" style={{ background: 'var(--bg-surface-2)', borderColor: 'var(--border)' }}>
                 <p className="type-label mb-3">Schedule Information</p>
                 <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-sm" style={{ color: 'var(--text-muted)' }}>Company</span>
-                    <span className="text-sm font-semibold" style={{ color: 'var(--text)' }}>{activeInterview.drive.company}</span>
+                  <div className="flex justify-between items-start gap-2 flex-wrap">
+                    <span className="text-sm flex-shrink-0" style={{ color: 'var(--text-muted)' }}>Company</span>
+                    <span className="text-sm font-semibold text-right" style={{ color: 'var(--text)' }}>{activeInterview.drive.company}</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm" style={{ color: 'var(--text-muted)' }}>Date & Time</span>
+                  <div className="flex justify-between items-start gap-2 flex-wrap">
+                    <span className="text-sm flex-shrink-0" style={{ color: 'var(--text-muted)' }}>Date &amp; Time</span>
                     <span className="text-sm font-mono font-bold" style={{ color: 'var(--text)' }}>
                       {activeInterview.interviewDate ? new Date(activeInterview.interviewDate).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) : 'TBD'}
                     </span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm" style={{ color: 'var(--text-muted)' }}>Mode / Venue</span>
-                    <span className="text-sm font-semibold" style={{ color: 'var(--text)' }}>{activeInterview.drive.venue || 'Virtual'}</span>
+                  <div className="flex justify-between items-start gap-2 flex-wrap">
+                    <span className="text-sm flex-shrink-0" style={{ color: 'var(--text-muted)' }}>Mode / Venue</span>
+                    <span className="text-sm font-semibold text-right" style={{ color: 'var(--text)' }}>{activeInterview.drive.venue || 'Virtual'}</span>
                   </div>
                 </div>
               </div>

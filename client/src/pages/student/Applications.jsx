@@ -92,14 +92,14 @@ export default function StudentApplications() {
                 >
                   <div className="card-body">
                     {/* Top Section */}
-                    <div className="flex items-start justify-between flex-wrap gap-6 mb-8">
+                    <div className="flex items-start justify-between flex-col sm:flex-row flex-wrap gap-4 mb-6">
                       {/* Left: Company & Drive Info */}
-                      <div className="flex items-start gap-4">
+                      <div className="flex items-start gap-3 sm:gap-4">
                         <CompanyAvatar name={app.drive.company} size="lg" />
-                        <div>
-                          <div className="flex items-center gap-3 flex-wrap">
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
                             <h2
-                              className="font-serif text-xl font-bold transition-colors group-hover:text-orange-500"
+                              className="font-serif text-lg sm:text-xl font-bold transition-colors group-hover:text-orange-500 break-words"
                               style={{ color: 'var(--text)' }}
                             >
                               {app.drive.company}
@@ -145,7 +145,7 @@ export default function StudentApplications() {
                     </div>
 
                     {/* Timeline Tracker */}
-                    <div className="relative pt-4 pb-8 px-4 mt-4" style={{ borderTop: '1px solid var(--border)' }}>
+                    <div className="relative pt-4 pb-10 px-2 sm:px-4 mt-4 overflow-x-hidden" style={{ borderTop: '1px solid var(--border)' }}>
                       <div className="tracker-rail">
                         <div
                           className="tracker-fill"

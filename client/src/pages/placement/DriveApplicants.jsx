@@ -94,30 +94,30 @@ export default function DriveApplicants() {
       
       {/* Workspace Header */}
       <div className="flex-shrink-0 px-4 md:px-8 py-4 border-b z-10" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border)' }}>
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 max-w-screen-2xl mx-auto">
+        <div className="workspace-header-inner flex flex-col md:flex-row md:items-center justify-between gap-4 max-w-screen-2xl mx-auto">
           <div>
             <Link to="/placement/drives" className="inline-flex items-center gap-1.5 text-xs font-semibold mb-2 transition-colors" style={{ color: 'var(--text-muted)' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--text)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}>
               <ArrowLeft className="w-3.5 h-3.5" /> Back to Drives
             </Link>
-            <h1 className="type-h3 flex items-center gap-3">
+            <h1 className="type-h3 flex items-center gap-2 flex-wrap">
               {drive?.company} <span className="font-sans text-sm font-normal px-2 py-0.5 rounded border" style={{ color: 'var(--text-muted)', borderColor: 'var(--border)', background: 'var(--bg-surface-2)' }}>{drive?.jobRole}</span>
             </h1>
           </div>
 
           {/* Filters */}
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="relative">
+          <div className="workspace-filter-row flex flex-wrap items-center gap-3">
+            <div className="relative flex-1 min-w-[180px]">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-muted)' }} />
-              <input type="text" placeholder="Search candidate..." className="form-input !py-1.5 !pl-8 text-sm w-48" value={search} onChange={e => setSearch(e.target.value)} />
+              <input type="text" placeholder="Search candidate..." className="form-input !py-1.5 !pl-8 text-sm w-full" value={search} onChange={e => setSearch(e.target.value)} />
             </div>
-            <select className="form-select !py-1.5 text-sm w-32" value={branchFilter} onChange={e => setBranchFilter(e.target.value)}>
+            <select className="form-select !py-1.5 text-sm flex-1 min-w-[120px]" value={branchFilter} onChange={e => setBranchFilter(e.target.value)}>
               <option value="">All Branches</option>
               <option value="MCA">MCA</option>
               <option value="BCA">BCA</option>
               <option value="BBA">BBA</option>
               <option value="BSc IT">BSc IT</option>
             </select>
-            <select className="form-select !py-1.5 text-sm w-32" value={minCgpa} onChange={e => setMinCgpa(e.target.value)}>
+            <select className="form-select !py-1.5 text-sm flex-1 min-w-[120px]" value={minCgpa} onChange={e => setMinCgpa(e.target.value)}>
               <option value="">Any CGPA</option>
               <option value="6.0">6.0+</option>
               <option value="7.0">7.0+</option>
@@ -129,8 +129,8 @@ export default function DriveApplicants() {
       </div>
 
       {/* Pipeline Board */}
-      <div className="flex-1 overflow-x-auto overflow-y-hidden p-4 md:p-8" style={{ background: 'var(--bg-page)' }}>
-        <div className="flex gap-6 h-full max-w-screen-2xl mx-auto items-start">
+      <div className="pipeline-board flex-1 overflow-x-auto overflow-y-hidden p-4 md:p-8" style={{ background: 'var(--bg-page)' }}>
+        <div className="flex gap-4 md:gap-6 h-full max-w-screen-2xl mx-auto items-start" style={{ minWidth: 'max-content' }}>
           {PIPELINE_STAGES.map((stage) => {
             const stageApps = filteredApps.filter(a => a.status === stage.id);
             return (

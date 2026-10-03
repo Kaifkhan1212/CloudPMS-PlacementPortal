@@ -56,7 +56,7 @@ export default function AdminDashboard() {
 
           {/* Main Hero Stat */}
           <div
-            className="cpm-card flex-shrink-0 w-full lg:w-72 flex flex-col justify-center items-center text-center p-8 relative overflow-hidden"
+            className="admin-hero-card cpm-card flex-shrink-0 w-full lg:w-72 flex flex-col justify-center items-center text-center p-8 relative overflow-hidden"
             style={{ background: 'linear-gradient(135deg, #172B4D 0%, #2D4F85 100%)', border: 'none' }}
           >
             <div
@@ -84,7 +84,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* KPI Grid */}
-          <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-5">
+          <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
             <StatCard
               icon={<Users className="w-4 h-4" strokeWidth={2.5} style={{ color: 'var(--info-text)' }} />}
               colorClass=""

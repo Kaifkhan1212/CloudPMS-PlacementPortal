@@ -19,6 +19,7 @@ import StudentProfile from './pages/student/Profile';
 // Placement Cell Pages
 import PlacementDrives from './pages/placement/ManageDrives';
 import DriveApplicants from './pages/placement/DriveApplicants';
+import DriveForm from './pages/placement/DriveForm';
 import CommunicationCenter from './pages/placement/CommunicationCenter';
 import Interviews from './pages/placement/Interviews';
 
@@ -45,7 +46,7 @@ function AppLayout() {
   return (
     <>
       <Navbar />
-      <main className="flex-1">
+      <main className="flex-1 overflow-x-hidden">
         <Outlet />
       </main>
       <footer className="border-t border-border bg-cream py-6 mt-auto">
@@ -95,6 +96,8 @@ export default function App() {
               {/* Placement Cell Routes */}
               <Route element={<ProtectedRoute allowedRoles={['placement_cell']} />}>
                 <Route path="/placement/drives" element={<PlacementDrives />} />
+                <Route path="/placement/drives/new" element={<DriveForm />} />
+                <Route path="/placement/drives/:driveId/edit" element={<DriveForm />} />
                 <Route path="/placement/drives/:driveId/applicants" element={<DriveApplicants />} />
                 <Route path="/placement/interviews" element={<Interviews />} />
                 <Route path="/placement/communication" element={<CommunicationCenter />} />
@@ -112,7 +115,20 @@ export default function App() {
             </Route>
           </Routes>
         </div>
-        <Toaster position="top-right" toastOptions={{ duration: 3500 }} />
+        {/* Subtle bottom-right toasts — do not cover main interface */}
+        <Toaster
+          position="bottom-right"
+          toastOptions={{
+            duration: 3000,
+            style: {
+              fontSize: '0.8125rem',
+              fontFamily: 'Inter, ui-sans-serif, system-ui',
+              maxWidth: '360px',
+              padding: '10px 14px',
+            },
+            success: { iconTheme: { primary: '#F97316', secondary: '#fff' } },
+          }}
+        />
       </AuthProvider>
     </BrowserRouter>
   );

@@ -218,11 +218,11 @@ function EmailHistoryTab() {
       {/* Filters Toolbar */}
       <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between p-4 rounded-lg shadow-sm" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)' }}>
         <form onSubmit={handleSearch} className="flex-1 w-full flex gap-3">
-          <div className="relative flex-1 max-w-md">
+          <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-muted)' }} />
             <input
               type="text"
-              className="form-input !pl-9 !py-2"
+              className="form-input !pl-9 !py-2 w-full"
               placeholder="Search subject or recipient..."
               value={filters.search}
               onChange={(e) => setFilters({ ...filters, search: e.target.value })}
@@ -231,9 +231,9 @@ function EmailHistoryTab() {
           <button type="submit" className="hidden" />
         </form>
         
-        <div className="flex gap-3 w-full md:w-auto">
+        <div className="comm-filters-row flex gap-3 w-full md:w-auto">
           <select 
-            className="form-select !py-2" 
+            className="form-select !py-2 flex-1 md:flex-none" 
             value={filters.type} 
             onChange={(e) => setFilters({ ...filters, type: e.target.value, page: 1 })}
           >
@@ -243,7 +243,7 @@ function EmailHistoryTab() {
             <option value="status_update">Status Update</option>
           </select>
           <select 
-            className="form-select !py-2" 
+            className="form-select !py-2 flex-1 md:flex-none" 
             value={filters.status} 
             onChange={(e) => setFilters({ ...filters, status: e.target.value, page: 1 })}
           >

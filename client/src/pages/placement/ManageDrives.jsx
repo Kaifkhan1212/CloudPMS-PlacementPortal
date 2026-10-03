@@ -101,7 +101,7 @@ export default function ManageDrives() {
         ) : (
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
             {filteredDrives.map((drive) => (
-              <div key={drive._id} className="cpm-card flex flex-col md:flex-row gap-5 overflow-hidden transition-all hover:shadow-card-md hover:-translate-y-0.5">
+              <div key={drive._id} className="cpm-card flex flex-col md:flex-row overflow-hidden transition-all hover:shadow-card-md hover:-translate-y-0.5">
                 
                 {/* Left content block */}
                 <div className="flex-1 p-5 md:p-6 md:pr-4 flex flex-col">
@@ -124,7 +124,7 @@ export default function ManageDrives() {
                     </div>
                     <div className="flex items-center gap-2 text-sm font-sans" style={{ color: 'var(--text-muted)' }}>
                       <Calendar className="w-4 h-4" />
-                      <span>Drive: {formatDate(drive.date)}</span>
+                      <span>Drive: {drive.driveDate ? formatDate(drive.driveDate) : 'TBD'}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm font-sans" style={{ color: 'var(--text-muted)' }}>
                       <MapPin className="w-4 h-4" />
@@ -148,13 +148,12 @@ export default function ManageDrives() {
 
                 {/* Right stats block (desktop side, mobile bottom) */}
                 <div 
-                  className="w-full md:w-48 p-5 md:p-6 flex flex-row md:flex-col items-center justify-center gap-4 md:gap-6" 
-                  style={{ background: 'var(--bg-surface-2)', borderLeft: '1px solid var(--border)' }}
+                  className="drive-stats-block w-full md:w-48 p-4 md:p-6 flex flex-row md:flex-col items-center justify-center gap-4 md:gap-6" 
+                  style={{ background: 'var(--bg-surface-2)' }}
                 >
                   <div className="text-center flex-1">
                     <p className="type-label mb-1">Applicants</p>
                     <p className="font-mono text-3xl font-bold" style={{ color: 'var(--text)' }}>
-                      {/* Would usually fetch live count, defaulting to 0 for mock */}
                       0
                     </p>
                   </div>

@@ -53,15 +53,15 @@ export default function Reports() {
                   <div className="card-body p-0">
                     
                     {/* Header Row */}
-                    <div className="p-6 pb-5 flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-border">
+                    <div className="report-header-row p-6 pb-5 flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6 border-b border-border">
                       <div className="flex items-center gap-4">
                         <CompanyAvatar name={item.company} size="lg" />
                         <div>
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-3 flex-wrap">
                             <h2 className="type-h3">{item.company}</h2>
                             <StatusBadge status={item.status} />
                           </div>
-                          <div className="mt-1 flex items-center gap-3 flex-wrap">
+                          <div className="mt-1 flex items-center gap-2 flex-wrap">
                             <span className="font-sans text-sm font-medium" style={{ color: 'var(--text)' }}>
                               {item.jobRole}
                             </span>
@@ -81,20 +81,20 @@ export default function Reports() {
                       </div>
 
                       <div
-                        className="flex items-center gap-6 p-4 rounded border"
+                        className="report-stats-box flex items-center gap-4 md:gap-6 p-4 rounded border"
                         style={{ background: 'var(--bg-surface-2)', borderColor: 'var(--border)' }}
                       >
-                        <div className="text-center min-w-[70px]">
+                        <div className="text-center flex-1">
                           <p className="type-label mb-0.5">Applicants</p>
                           <p className="font-mono text-xl font-bold" style={{ color: 'var(--text)' }}>{item.totalApplications}</p>
                         </div>
                         <div className="w-px h-8" style={{ background: 'var(--border)' }}></div>
-                        <div className="text-center min-w-[70px]">
+                        <div className="text-center flex-1">
                           <p className="type-label mb-0.5">Offers</p>
                           <p className="font-mono text-xl font-bold" style={{ color: 'var(--success-fill)' }}>{selectedCount}</p>
                         </div>
                         <div className="w-px h-8" style={{ background: 'var(--border)' }}></div>
-                        <div className="text-center min-w-[70px]">
+                        <div className="text-center flex-1">
                           <p className="type-label mb-0.5">Conversion</p>
                           <p className="font-mono text-xl font-bold" style={{ color: 'var(--text)' }}>{conversionRate}%</p>
                         </div>
