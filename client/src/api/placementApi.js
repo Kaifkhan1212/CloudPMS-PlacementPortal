@@ -7,4 +7,5 @@ export const placementApi = {
   closeDrive:            (id)             => api.patch(`/placement/drives/${id}/close`),
   getDriveApplicants:    (id, params)     => api.get(`/placement/drives/${id}/applicants`, { params }),
   updateAppStatus:       (appId, data)    => api.patch(`/placement/applications/${appId}/status`, data),
+  getStudentResumeView:  (studentId)      => api.get(`/placement/students/${studentId}/resume-view`),
 };

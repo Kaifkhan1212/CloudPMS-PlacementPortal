@@ -76,4 +76,6 @@ router.post(
 // ── Applications ──────────────────────────────────────────────
 router.get('/applications', studentController.getMyApplications);
 
+router.get('/resume-view', studentController.getMyResumeView);
+
 module.exports = router;

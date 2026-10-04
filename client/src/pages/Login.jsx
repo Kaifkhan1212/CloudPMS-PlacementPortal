@@ -4,7 +4,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
 import { getApiError, rolePath } from '../utils/helpers';
 import { PageTitle } from '../components/common/UI';
-import { ArrowRight, GraduationCap, Building2, Shield } from 'lucide-react';
+import { ArrowRight, GraduationCap, Building2, Shield, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const HIGHLIGHTS = [
@@ -17,6 +17,7 @@ export default function Login() {
   const { login, googleLogin } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: '', password: '' });
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading]   = useState(false);
   const [gLoading, setGLoading] = useState(false);
 
@@ -25,7 +26,7 @@ export default function Login() {
     setLoading(true);
     try {
       const user = await login(form.email, form.password);
-      toast.success(`Welcome back, ${user.name}!`);
+      toast.success('Signed in', { duration: 1800, icon: '✓' });
       navigate(rolePath(user.role), { replace: true });
     } catch (err) {
       toast.error(getApiError(err));
@@ -39,7 +40,7 @@ export default function Login() {
       setGLoading(true);
       try {
         const user = await googleLogin(tokenResponse.access_token);
-        toast.success(`Welcome, ${user.name}!`);
+        toast.success('Signed in', { duration: 1800, icon: '✓' });
         navigate(rolePath(user.role), { replace: true });
       } catch (err) {
         toast.error(getApiError(err) || 'Google sign-in failed');
@@ -172,12 +173,21 @@ export default function Login() {
                   Forgot password?
                 </Link>
               </div>
-              <input
-                type="password" className="form-input" placeholder="Enter your password"
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                required
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'} className="form-input pr-10" placeholder="Enter your password"
+                  value={form.password}
+                  onChange={(e) => setForm({ ...form, password: e.target.value })}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-ink transition-colors focus:outline-none"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
 
             <button

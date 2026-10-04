@@ -13,7 +13,7 @@
  *    can clear state and redirect to login.
  */
 
-import axios from 'axios';
+import axios from 'axios'; // kept for axios.create() only
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
@@ -67,6 +67,8 @@ axiosInstance.interceptors.response.use(
           failedQueue.push({ resolve, reject });
         })
           .then((token) => {
+            // Guard: headers may be undefined on stale config objects
+            original.headers = original.headers || {};
             original.headers.Authorization = `Bearer ${token}`;
             return axiosInstance(original);
           })
@@ -77,14 +79,15 @@ axiosInstance.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const { data } = await axios.post(
-          `${BASE_URL}/auth/refresh`,
-          {},
-          { withCredentials: true }
-        );
+        // Use axiosInstance (not bare axios) so the request goes through
+        // the Vite proxy and the httpOnly cookie is correctly forwarded.
+        // Skip the request interceptor's auth header by using a separate
+        // config — refresh endpoint doesn't need an access token.
+        const { data } = await axiosInstance.post('/auth/refresh', {});
         const newToken = data.data.accessToken;
         setAccessToken(newToken);
         processQueue(null, newToken);
+        original.headers = original.headers || {};
         original.headers.Authorization = `Bearer ${newToken}`;
         return axiosInstance(original);
       } catch (refreshError) {

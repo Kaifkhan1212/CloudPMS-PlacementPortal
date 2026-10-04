@@ -10,6 +10,11 @@ export default defineConfig({
         target: 'http://localhost:5000',
         changeOrigin: true,
         secure: false,
+        // Rewrite cookie domain so the browser sees the cookie
+        // as belonging to localhost:5173 (Vite), not localhost:5000
+        // This is required for the httpOnly refreshToken cookie to
+        // be stored and re-sent correctly through the dev proxy.
+        cookieDomainRewrite: 'localhost',
       },
     },
   },

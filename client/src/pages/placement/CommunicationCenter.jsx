@@ -216,9 +216,10 @@ function EmailHistoryTab() {
   return (
     <div className="space-y-6 animate-fade-in pb-10">
       {/* Filters Toolbar */}
-      <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between p-4 rounded-lg shadow-sm" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)' }}>
-        <form onSubmit={handleSearch} className="flex-1 w-full flex gap-3">
-          <div className="relative flex-1">
+      <div className="flex flex-wrap gap-3 items-center p-4 rounded-lg shadow-sm" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)' }}>
+        {/* Search — grows to fill available space, min 180px */}
+        <form onSubmit={handleSearch} className="flex-1 min-w-[180px]">
+          <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-muted)' }} />
             <input
               type="text"
@@ -230,28 +231,29 @@ function EmailHistoryTab() {
           </div>
           <button type="submit" className="hidden" />
         </form>
-        
-        <div className="comm-filters-row flex gap-3 w-full md:w-auto">
-          <select 
-            className="form-select !py-2 flex-1 md:flex-none" 
-            value={filters.type} 
-            onChange={(e) => setFilters({ ...filters, type: e.target.value, page: 1 })}
-          >
-            <option value="">All Types</option>
-            <option value="manual">Manual Compose</option>
-            <option value="application_confirmation">Application Confirmed</option>
-            <option value="status_update">Status Update</option>
-          </select>
-          <select 
-            className="form-select !py-2 flex-1 md:flex-none" 
-            value={filters.status} 
-            onChange={(e) => setFilters({ ...filters, status: e.target.value, page: 1 })}
-          >
-            <option value="">All Statuses</option>
-            <option value="sent">Delivered</option>
-            <option value="failed">Failed</option>
-          </select>
-        </div>
+
+        {/* Type filter */}
+        <select
+          className="form-select !py-2 min-w-[140px] flex-shrink-0"
+          value={filters.type}
+          onChange={(e) => setFilters({ ...filters, type: e.target.value, page: 1 })}
+        >
+          <option value="">All Types</option>
+          <option value="manual">Manual Compose</option>
+          <option value="application_confirmation">Application Confirmed</option>
+          <option value="status_update">Status Update</option>
+        </select>
+
+        {/* Status filter */}
+        <select
+          className="form-select !py-2 min-w-[130px] flex-shrink-0"
+          value={filters.status}
+          onChange={(e) => setFilters({ ...filters, status: e.target.value, page: 1 })}
+        >
+          <option value="">All Statuses</option>
+          <option value="sent">Delivered</option>
+          <option value="failed">Failed</option>
+        </select>
       </div>
 
       {/* List */}
@@ -263,7 +265,8 @@ function EmailHistoryTab() {
         />
       ) : (
         <div className="cpm-card overflow-hidden">
-          <div className="overflow-x-auto">
+          {/* Desktop table — hidden on mobile */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="cpm-table">
               <thead>
                 <tr>
@@ -318,10 +321,48 @@ function EmailHistoryTab() {
               </tbody>
             </table>
           </div>
+
+          {/* Mobile card list — shown only on < md */}
+          <div className="md:hidden divide-y" style={{ borderColor: 'var(--border)' }}>
+            {logs.map((log) => (
+              <button
+                key={log._id}
+                onClick={() => setSelectedLog(log)}
+                className="w-full text-left p-4 flex flex-col gap-2 hover:bg-surface-2 transition-colors"
+                style={{ background: 'transparent' }}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <p className="font-sans font-semibold text-sm flex-1 min-w-0" style={{ color: 'var(--text)' }}>
+                    {log.subject}
+                  </p>
+                  {log.status === 'sent' ? (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-2xs font-bold flex-shrink-0" style={{ background: 'var(--success-bg)', color: 'var(--success-text)', border: '1px solid var(--success-border)' }}>
+                      <CheckCircle2 className="w-3 h-3" /> Sent
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-2xs font-bold flex-shrink-0" style={{ background: 'var(--error-bg)', color: 'var(--error-text)', border: '1px solid var(--error-border)' }}>
+                      <XCircle className="w-3 h-3" /> Failed
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <span className="text-xs font-medium truncate max-w-[180px]" style={{ color: 'var(--text-muted)' }}>
+                    To: {log.recipients[0]}{log.recipients.length > 1 && ` +${log.recipients.length - 1} more`}
+                  </span>
+                  <span className="text-2xs uppercase tracking-wider font-semibold" style={{ color: 'var(--text-subtle)' }}>
+                    {log.type.replace('_', ' ')}
+                  </span>
+                  <span className="text-2xs ml-auto" style={{ color: 'var(--text-subtle)' }}>
+                    {formatDate(log.createdAt)}
+                  </span>
+                </div>
+              </button>
+            ))}
+          </div>
           
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="px-6 py-4 flex items-center justify-between" style={{ borderTop: '1px solid var(--border)', background: 'var(--bg-surface-2)' }}>
+            <div className="px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-3" style={{ borderTop: '1px solid var(--border)', background: 'var(--bg-surface-2)' }}>
               <span className="font-sans text-sm font-medium" style={{ color: 'var(--text-muted)' }}>Page {filters.page} of {totalPages}</span>
               <div className="flex gap-2">
                 <button disabled={filters.page === 1} onClick={() => setFilters({ ...filters, page: filters.page - 1 })} className="btn-secondary !py-1.5 !px-3 text-sm">Previous</button>

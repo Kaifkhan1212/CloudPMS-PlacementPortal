@@ -94,4 +94,11 @@ router.patch(
   placementController.updateApplicationStatus
 );
 
+router.get(
+  '/students/:studentId/resume-view',
+  [param('studentId').isMongoId().withMessage('Invalid student ID')],
+  validate,
+  placementController.getStudentResumeView
+);
+
 module.exports = router;

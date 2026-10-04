@@ -9,4 +9,5 @@ export const studentApi = {
   getEligibleDrives: (params) => api.get('/students/drives', { params }),
   applyToDrive:    (driveId) => api.post(`/students/drives/${driveId}/apply`),
   getMyApplications: ()      => api.get('/students/applications'),
+  getMyResumeView:   ()      => api.get('/students/resume-view'),
 };

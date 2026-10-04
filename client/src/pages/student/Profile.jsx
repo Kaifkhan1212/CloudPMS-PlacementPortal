@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { studentApi } from '../../api/studentApi';
 import { useAuth } from '../../context/AuthContext';
-import { getApiError } from '../../utils/helpers';
+import { getApiError, extractResumeFilename } from '../../utils/helpers';
 import { PageLoader, Alert, Avatar, StatusBadge } from '../../components/common/UI';
 import PageTitle from '../../components/common/PageTitle';
 import PageHero from '../../components/common/PageHero';
@@ -16,6 +16,7 @@ export default function StudentProfile() {
   const [loading, setLoading]     = useState(true);
   const [saving, setSaving]       = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [viewingResume, setViewingResume] = useState(false);
   const [editMode, setEditMode]   = useState(false);
   const [form, setForm] = useState({
     rollNumber: '', branch: 'MCA', cgpa: '', backlogCount: 0,
@@ -80,6 +81,18 @@ export default function StudentProfile() {
       toast.error(getApiError(err));
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleViewResume = async () => {
+    setViewingResume(true);
+    try {
+      const res = await studentApi.getMyResumeView();
+      window.open(res.data.data.url, '_blank');
+    } catch (err) {
+      toast.error(getApiError(err) || 'Failed to open resume');
+    } finally {
+      setViewingResume(false);
     }
   };
 
@@ -277,7 +290,7 @@ export default function StudentProfile() {
                   </div>
                   <div>
                     <p className="font-sans font-semibold text-sm" style={{ color: 'var(--text)' }}>
-                      {profile?.resumePath ? 'Professional_Resume.pdf' : 'No Resume Uploaded'}
+                      {extractResumeFilename(profile?.resumePath)}
                     </p>
                     <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
                       {!profile ? 'Complete academic details first' : 'PDF format, Max 5MB'}
@@ -286,9 +299,9 @@ export default function StudentProfile() {
                 </div>
                 <div className="flex items-center gap-3">
                   {profile?.resumePath && (
-                    <a href={profile.resumePath} target="_blank" rel="noreferrer" className="btn-secondary">
-                      View
-                    </a>
+                    <button onClick={handleViewResume} disabled={viewingResume} className="btn-secondary disabled:opacity-50">
+                      {viewingResume ? 'Generating...' : 'View'}
+                    </button>
                   )}
                   <label
                     className={`btn-primary ${!profile ? 'opacity-50 cursor-not-allowed' : uploading ? 'opacity-70 cursor-wait' : 'cursor-pointer'}`}

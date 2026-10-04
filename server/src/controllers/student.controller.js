@@ -12,7 +12,8 @@
 
 'use strict';
 
-const { PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
+const { PutObjectCommand, DeleteObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const { s3Client } = require('../config/awsClients');
 const StudentProfile = require('../models/StudentProfile.model');
 const Drive = require('../models/Drive.model');
@@ -299,6 +300,34 @@ const getMyApplications = async (req, res, next) => {
   }
 };
 
+// ─────────────────────────────────────────────────────────────
+// GET /api/students/resume-view
+// Access: student only
+// ─────────────────────────────────────────────────────────────
+const getMyResumeView = async (req, res, next) => {
+  try {
+    const profile = await StudentProfile.findOne({ user: req.user.userId });
+    if (!profile) throw new ApiError(404, 'Student profile not found');
+    if (!profile.resumePath) throw new ApiError(404, 'No resume uploaded');
+
+    const url = new URL(profile.resumePath);
+    const key = url.pathname.slice(1);
+
+    const command = new GetObjectCommand({
+      Bucket: process.env.AWS_S3_BUCKET_NAME,
+      Key: key,
+    });
+
+    const presignedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+
+    return res.status(200).json(
+      new ApiResponse(200, { url: presignedUrl }, 'Resume view URL generated')
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   upsertProfile,
   getMyProfile,
@@ -306,4 +335,5 @@ module.exports = {
   getEligibleDrives,
   applyToDrive,
   getMyApplications,
+  getMyResumeView,
 };

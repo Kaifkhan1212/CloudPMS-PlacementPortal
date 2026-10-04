@@ -1197,3 +1197,93 @@ html, body, #root {
     font-size: 0.75rem !important;
   }
 }
+
+/* ════════════════════════════════════════════════════════════════════
+   ADDITIONAL RESPONSIVE FIXES v3 — filename, compose form, drawers
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── Compose email form: full width selects on mobile ─────────────── */
+@media (max-width: 639px) {
+  .cpm-card form .grid.grid-cols-1.md\\:grid-cols-2 {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ── Email detail modal: full-screen on mobile ────────────────────── */
+@media (max-width: 639px) {
+  /* The fixed overlay containing email detail */
+  .fixed.inset-0.z-50.flex.items-center.justify-center.p-4 > div {
+    width: 100% !important;
+    max-width: calc(100vw - 1.5rem) !important;
+    max-height: 92vh !important;
+    margin: 0 0.75rem;
+  }
+}
+
+/* ── Ensure all fixed overlays never exceed viewport width ─────────── */
+@media (max-width: 639px) {
+  .fixed.inset-0 > * {
+    max-width: 100vw;
+  }
+}
+
+/* ── Resume filename: truncate long names gracefully ─────────────── */
+.resume-filename {
+  word-break: break-all;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+}
+
+/* ── Mobile: Communication Center tab buttons ─────────────────────── */
+@media (max-width: 479px) {
+  /* Tabs row: allow wrap */
+  .border-b.pb-4 .flex.items-center.gap-2 {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+}
+
+/* ── Mobile card divider color fix ────────────────────────────────── */
+.md\:hidden.divide-y > * + * {
+  border-top: 1px solid var(--border);
+}
+
+/* ── Prevent long email addresses from causing overflow in drawers ── */
+@media (max-width: 639px) {
+  .fixed.inset-0.z-50 p,
+  .fixed.inset-0.z-50 span,
+  .fixed.inset-0.z-50 div {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* ── Student profile: left sidebar stacks on mobile ──────────────── */
+@media (max-width: 1023px) {
+  /* Profile page lg:flex-row layout: stack on mobile */
+  .page-container.max-w-5xl.flex.flex-col.lg\\:flex-row {
+    flex-direction: column !important;
+  }
+  .page-container.max-w-5xl > .w-full.lg\\:w-72 {
+    width: 100% !important;
+  }
+}
+
+/* ── Dashboard stat cards: 2 cols on mobile, never overflow ─────── */
+@media (max-width: 479px) {
+  .grid.grid-cols-2.lg\\:grid-cols-4,
+  .grid.grid-cols-2.md\\:grid-cols-4,
+  .grid.grid-cols-2.sm\\:grid-cols-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.625rem !important;
+  }
+}
+
+/* ── Placement DriveApplicants: drawer resume filename truncation ── */
+@media (max-width: 639px) {
+  .fixed.inset-0.z-50.flex.justify-end .text-xs {
+    word-break: break-all;
+    overflow-wrap: anywhere;
+  }
+}
+

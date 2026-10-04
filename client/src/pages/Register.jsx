@@ -47,7 +47,7 @@ export default function Register() {
     setLoading(true);
     try {
       const user = await register(form);
-      toast.success(`Welcome to CloudPMS, ${user.name}!`);
+      toast.success('Account created', { duration: 1800, icon: '✓' });
       navigate(rolePath(user.role), { replace: true });
     } catch (err) {
       toast.error(getApiError(err));
@@ -61,7 +61,7 @@ export default function Register() {
       <PageTitle title="Create Account" />
 
       {/* ── Left: Brand Panel (same as login) ──────────────────── */}
-      <div className="hidden lg:flex flex-col w-[42%] bg-navy-600 relative overflow-hidden">
+      <div className="hidden lg:flex flex-col w-[42%] relative overflow-hidden" style={{ background: '#172B4D' }}>
         <div
           className="absolute inset-0"
           style={{
@@ -79,34 +79,34 @@ export default function Register() {
             <div className="w-9 h-9 bg-orange-500 flex items-center justify-center" style={{ borderRadius: 1 }}>
               <span style={{ fontFamily: 'DM Mono', fontWeight: 400, fontSize: 12, color: '#fff', letterSpacing: '0.06em' }}>CP</span>
             </div>
-            <span style={{ fontFamily: 'Playfair Display', fontWeight: 700, fontSize: 18, color: '#fff' }}>CloudPMS</span>
+            <span style={{ fontFamily: 'Playfair Display', fontWeight: 700, fontSize: 18, color: '#fff', letterSpacing: '0.01em' }}>CloudPMS</span>
           </div>
 
           <div className="mt-auto mb-12">
-            <p className="font-sans text-xs font-semibold text-navy-300 uppercase tracking-widest mb-4">
+            <p className="font-sans text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: '#7A91BE' }}>
               Join the Platform
             </p>
-            <h1 className="font-serif text-4xl font-bold text-white leading-tight mb-4">
+            <h1 className="font-serif text-4xl font-bold leading-tight mb-4" style={{ color: '#FFFFFF' }}>
               Start your<br />
-              <span className="text-orange-400">placement journey.</span>
+              <span style={{ color: '#FB923C' }}>placement journey.</span>
             </h1>
-            <p className="font-sans text-sm text-navy-200 leading-relaxed max-w-xs">
+            <p className="font-sans text-sm leading-relaxed max-w-xs" style={{ color: '#ADBAD9' }}>
               Create your account and connect with top recruiters through your institution's official placement portal.
             </p>
 
-            <div className="mt-10 space-y-3">
+            <div className="mt-10 space-y-4">
               {['Apply to curated company drives', 'Track application status live', 'Get shortlisted & scheduled'].map((item) => (
-                <div key={item} className="flex items-center gap-3">
-                  <div className="w-5 h-5 rounded-sm bg-orange-500/20 flex items-center justify-center flex-shrink-0">
-                    <Check className="w-3 h-3 text-orange-400" strokeWidth={3} />
+                <div key={item} className="flex items-center gap-4">
+                  <div className="w-8 h-8 rounded-sm flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,255,255,0.10)' }}>
+                    <Check className="w-4 h-4 text-orange-400" strokeWidth={1.5} />
                   </div>
-                  <p className="font-sans text-sm text-navy-200">{item}</p>
+                  <p className="font-sans text-sm font-medium" style={{ color: '#FFFFFF' }}>{item}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          <p className="font-sans text-2xs text-navy-400">
+          <p className="font-sans text-2xs" style={{ color: '#4D6EA3' }}>
             CloudPMS © {new Date().getFullYear()} — Campus Placement Management System
           </p>
         </div>

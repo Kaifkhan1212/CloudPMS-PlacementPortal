@@ -27,10 +27,24 @@ export const daysUntil = (dateStr) => {
   return `${days} day${days !== 1 ? 's' : ''} left`;
 };
 
-/** Role → home path */
 export const rolePath = (role) => {
   if (role === 'student')        return '/student/drives';
   if (role === 'placement_cell') return '/placement/drives';
   if (role === 'admin')          return '/admin/dashboard';
   return '/';
+};
+
+export const extractResumeFilename = (resumePath) => {
+  if (!resumePath) return 'No Resume Uploaded';
+  try {
+    const parts = resumePath.split('/');
+    const lastPart = parts[parts.length - 1];
+    const firstDashIndex = lastPart.indexOf('-');
+    if (firstDashIndex !== -1) {
+      return decodeURIComponent(lastPart.substring(firstDashIndex + 1));
+    }
+    return decodeURIComponent(lastPart);
+  } catch (e) {
+    return 'Resume.pdf';
+  }
 };

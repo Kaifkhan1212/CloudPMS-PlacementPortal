@@ -4,12 +4,32 @@ import { setAccessToken } from '../api/axiosInstance';
 
 export const AuthContext = createContext(null);
 
+/**
+ * Module-level guard — survives React 18 StrictMode's intentional
+ * mount → unmount → remount cycle (useRef/useState reset on remount,
+ * but module scope does NOT).
+ *
+ * Why this matters:
+ *   StrictMode fires useEffect twice in dev. Both calls hit
+ *   POST /api/auth/refresh. The server uses token rotation:
+ *   call #1 consumes cookie-A and writes token-B to DB.
+ *   call #2 also sends cookie-A (browser hasn't committed Set-Cookie yet)
+ *   → server sees DB=B, received=A → nulls DB token → 401 forever.
+ *
+ * The flag ensures only the FIRST invocation ever calls the endpoint.
+ */
+let _sessionRestoreAttempted = false;
+
 export function AuthProvider({ children }) {
   const [user, setUser]       = useState(null);
   const [loading, setLoading] = useState(true); // true while restoring session
 
   // ── Restore session on mount (try /auth/refresh with cookie) ──
   useEffect(() => {
+    // Block the StrictMode second invocation
+    if (_sessionRestoreAttempted) return;
+    _sessionRestoreAttempted = true;
+
     const restoreSession = async () => {
       try {
         const { data } = await authApi.refresh();

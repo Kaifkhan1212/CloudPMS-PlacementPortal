@@ -124,7 +124,8 @@ export default function Users() {
           </div>
         ) : (
           <div className="cpm-card overflow-hidden">
-            <div className="overflow-x-auto">
+            {/* Desktop table */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="cpm-table">
                 <thead>
                   <tr>
@@ -152,7 +153,7 @@ export default function Users() {
                               <div className="font-sans font-semibold text-sm" style={{ color: 'var(--text)' }}>
                                 {u.name}{isSelf && <span className="font-normal ml-1" style={{ color: 'var(--text-muted)' }}>(You)</span>}
                               </div>
-                              <div className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>{u.email}</div>
+                              <div className="text-xs mt-0.5 break-all" style={{ color: 'var(--text-muted)' }}>{u.email}</div>
                             </div>
                           </div>
                         </td>
@@ -211,10 +212,64 @@ export default function Users() {
               </table>
             </div>
 
+            {/* Mobile user cards */}
+            <div className="md:hidden divide-y" style={{ borderColor: 'var(--border)' }}>
+              {users.map((u) => {
+                const isSelf = u._id === currentUser?._id;
+                const roleStyle =
+                  u.role === 'student'         ? { bg: 'var(--info-bg)',    text: 'var(--info-text)',    border: 'var(--info-border)' }
+                  : u.role === 'placement_cell' ? { bg: 'var(--warning-bg)', text: 'var(--warning-text)', border: 'var(--warning-border)' }
+                  : { bg: 'var(--bg-surface-2)', text: 'var(--text-muted)', border: 'var(--border)' };
+
+                return (
+                  <div key={u._id} className="p-4 space-y-3">
+                    <div className="flex items-start gap-3">
+                      <Avatar name={u.name} size="md" />
+                      <div className="flex-1 min-w-0">
+                        <div className="font-sans font-semibold text-sm" style={{ color: 'var(--text)' }}>
+                          {u.name}{isSelf && <span className="font-normal ml-1 text-xs" style={{ color: 'var(--text-muted)' }}>(You)</span>}
+                        </div>
+                        <div className="text-xs mt-0.5 break-all" style={{ color: 'var(--text-muted)' }}>{u.email}</div>
+                        <div className="text-2xs mt-1" style={{ color: 'var(--text-subtle)' }}>Joined {formatDate(u.createdAt)}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between gap-3 flex-wrap">
+                      <div className="flex items-center gap-2">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-sans font-semibold" style={{ background: roleStyle.bg, color: roleStyle.text, border: `1px solid ${roleStyle.border}` }}>
+                          {u.role === 'student'        && <GraduationCap className="w-3.5 h-3.5" />}
+                          {u.role === 'placement_cell' && <Building2 className="w-3.5 h-3.5" />}
+                          {u.role === 'admin'          && <Shield className="w-3.5 h-3.5" />}
+                          {u.role === 'placement_cell' ? 'Placement Cell' : u.role.charAt(0).toUpperCase() + u.role.slice(1)}
+                        </span>
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-2xs font-sans font-bold uppercase tracking-wider"
+                          style={u.isVerified ? { background: 'var(--success-bg)', color: 'var(--success-text)' } : { background: 'var(--error-bg)', color: 'var(--error-text)' }}
+                        >
+                          {u.isVerified ? <Check className="w-3 h-3" strokeWidth={3} /> : <X className="w-3 h-3" strokeWidth={3} />}
+                          {u.isVerified ? 'Active' : 'Suspended'}
+                        </span>
+                      </div>
+                      {isSelf ? (
+                        <span className="text-xs font-medium px-3 py-1.5 rounded" style={{ background: 'var(--bg-surface-2)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}>Self</span>
+                      ) : (
+                        <button
+                          onClick={() => handleToggle(u._id)}
+                          disabled={togglingId === u._id}
+                          className="text-xs font-semibold px-3 py-1.5 rounded transition-colors border"
+                          style={u.isVerified ? { borderColor: 'var(--error-border)', color: 'var(--error-text)' } : { borderColor: 'var(--success-border)', color: 'var(--success-text)' }}
+                        >
+                          {togglingId === u._id ? 'Updating...' : u.isVerified ? 'Suspend' : 'Restore'}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
             {/* Pagination */}
             {totalPages > 1 && (
               <div
-                className="px-6 py-4 flex items-center justify-between"
+                className="px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-3"
                 style={{ borderTop: '1px solid var(--border)', background: 'var(--bg-surface-2)' }}
               >
                 <span className="font-sans text-sm font-medium" style={{ color: 'var(--text-muted)' }}>

@@ -11,6 +11,7 @@ export default function Interviews() {
   const [interviews, setInterviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(null);
+  const [viewingResume, setViewingResume] = useState(false);
 
   // Filters
   const [search, setSearch] = useState('');
@@ -102,6 +103,19 @@ export default function Interviews() {
       setActionModal(null);
       setRemark('');
       setNewDate('');
+    }
+  };
+
+  const handleViewResume = async () => {
+    if (!activeInterview?.student?._id) return;
+    setViewingResume(true);
+    try {
+      const res = await placementApi.getStudentResumeView(activeInterview.student._id);
+      window.open(res.data.data.url, '_blank');
+    } catch (err) {
+      toast.error(getApiError(err) || 'Failed to open resume');
+    } finally {
+      setViewingResume(false);
     }
   };
 
@@ -343,15 +357,17 @@ export default function Interviews() {
                   </div>
                 </div>
                 {activeInterview.student?.resumePath && (
-                  <a href={activeInterview.student.resumePath} target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 rounded border hover:border-accent transition-colors group" style={{ background: 'var(--bg-surface-2)', borderColor: 'var(--border)' }}>
+                  <button onClick={handleViewResume} disabled={viewingResume} className="w-full text-left flex items-center justify-between p-3 rounded border hover:border-accent transition-colors group disabled:opacity-50" style={{ background: 'var(--bg-surface-2)', borderColor: 'var(--border)' }}>
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded flex items-center justify-center bg-accent text-white"><FileText className="w-4 h-4" /></div>
                       <div>
-                        <p className="text-sm font-semibold" style={{ color: 'var(--text)' }}>View Resume</p>
+                        <p className="text-sm font-semibold" style={{ color: 'var(--text)' }}>
+                          {viewingResume ? 'Generating Secure Link...' : 'View Resume'}
+                        </p>
                       </div>
                     </div>
                     <ChevronRight className="w-4 h-4 group-hover:text-accent transition-colors" style={{ color: 'var(--text-muted)' }} />
-                  </a>
+                  </button>
                 )}
               </div>
 

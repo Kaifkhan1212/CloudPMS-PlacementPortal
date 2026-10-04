@@ -19,6 +19,9 @@ const User = require('../models/User.model');
 const ApiError = require('../utils/ApiError');
 const ApiResponse = require('../utils/ApiResponse');
 const { sendEmail } = require('../utils/awsServices');
+const { GetObjectCommand } = require('@aws-sdk/client-s3');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+const { s3Client } = require('../config/awsClients');
 
 // ─────────────────────────────────────────────────────────────
 // POST /api/placement/drives
@@ -279,6 +282,34 @@ const updateApplicationStatus = async (req, res, next) => {
   }
 };
 
+// ─────────────────────────────────────────────────────────────
+// GET /api/placement/students/:studentId/resume-view
+// Access: placement_cell, admin
+// ─────────────────────────────────────────────────────────────
+const getStudentResumeView = async (req, res, next) => {
+  try {
+    const student = await StudentProfile.findById(req.params.studentId);
+    if (!student) throw new ApiError(404, 'Student not found');
+    if (!student.resumePath) throw new ApiError(404, 'Student has no resume uploaded');
+
+    const url = new URL(student.resumePath);
+    const key = url.pathname.slice(1);
+
+    const command = new GetObjectCommand({
+      Bucket: process.env.AWS_S3_BUCKET_NAME,
+      Key: key,
+    });
+
+    const presignedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+
+    return res.status(200).json(
+      new ApiResponse(200, { url: presignedUrl }, 'Resume view URL generated')
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createDrive,
   getMyDrives,
@@ -286,4 +317,5 @@ module.exports = {
   closeDrive,
   getDriveApplicants,
   updateApplicationStatus,
+  getStudentResumeView,
 };
